@@ -2,7 +2,30 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div>
+    <div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+        <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    </div>
+
+    <div>
+        <h2>List of functionalities</h2>
+        <div>
+            <a asp-controller="Chatbot" asp-action="Index" class="btn btn-light border-dark" role="button">
+                Interactive Chatbot
+            </a>
+        </div>
+        <div class="mt-2">
+            <a href="" class="btn btn-light border-dark" role="button">
+                Function 2
+            </a>
+        </div>
+        <div class="mt-2">
+            <a href="" class="btn btn-light border-dark" role="button">
+                Function 3
+            </a>
+        </div>
+    </div>
+
 </div>
+
