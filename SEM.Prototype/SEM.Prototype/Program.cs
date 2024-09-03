@@ -1,10 +1,12 @@
 using SEM.Prototype.Hubs;
+using SEM.Prototype.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<ChatbotService>();
 
 var app = builder.Build();
 

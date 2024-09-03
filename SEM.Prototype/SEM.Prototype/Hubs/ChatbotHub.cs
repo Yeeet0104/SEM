@@ -1,12 +1,21 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using SEM.Prototype.Services;
 
 namespace SEM.Prototype.Hubs
 {
     public class ChatbotHub : Hub
     {
-        public async Task SendMessage(string user, string message)
+        private readonly ChatbotService _chatbotService;
+        public ChatbotHub(ChatbotService chatbotService)
         {
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
+            _chatbotService = chatbotService;
+        }
+
+        public async Task ChatAsync(string message)
+        {
+            //TODO : Implement streaming
+
+            await Clients.Caller.SendAsync("ReceiveMessage", message);
         }
     }
 }

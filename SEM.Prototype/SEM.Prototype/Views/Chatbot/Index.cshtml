@@ -8,28 +8,93 @@
         <p>Ask me anything!</p>
     </div>
     <div class="flex-grow-1 p-3 overflow-auto"
-         style="height:65vh; max-height:65vh;"
+         style="height:60vh; max-height:65vh;"
          id="chatContainer">
-        text
         <!-- Chat messages will be dynamically added here -->
     </div>
 
     <div class="p-3 bg-light bottom-0 mt-auto">
-        <form id="chatForm">
-            <div class="input-group">
-                <input type="text"
-                       id="userInput"
-                       class="form-control"
-                       placeholder="Type your message..." />
-                <button class="btn btn-primary"
-                        type="submit">
-                    Send
-                </button>
-            </div>
-        </form>
+        <div class="input-group">
+            <input type="text"
+                   id="userInput"
+                   class="form-control"
+                   placeholder="Type your message..." />
+            <button id="sendBtn" class="btn btn-primary"
+                    type="submit">
+                Send
+            </button>
+        </div>
     </div>
 </div>
 
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script>
-    var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+    var connection = new signalR.HubConnectionBuilder().withUrl("/chatbotHub").build();
+
+    const dom = {
+        chatContainer: document.getElementById("chatContainer"),
+        userInput: document.getElementById("userInput"),
+        sendBtn: document.getElementById("sendBtn"),
+    }
+
+    dom.sendBtn.disabled = true;
+
+    connection.on("ReceiveMessage", function (message) {
+        addMessage(message, false);
+    });
+
+    connection.start().then(function () {
+        dom.sendBtn.disabled = false;
+    }).catch(function (err) {
+        console.error(err.toString());
+        addMessage("Connection failed ..." + err.toString(), false);
+    });
+
+    dom.sendBtn.addEventListener("click", function () {
+        const message = dom.userInput.value;
+
+        if (message.trim() === "") {
+            return;
+        }
+
+        addMessage(message);
+
+        connection
+            .invoke("ChatAsync", message)
+            .catch(function (err) {
+                console.error(err.toString());
+                addMessage("Failed to send message: " + err.toString(), false);
+            });
+
+        dom.userInput.value = "";
+    });
+
+    function addMessage(text, isUser = true) {
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add(
+            "d-flex",
+            isUser === true ? "justify-content-end" : "justify-content-start",
+            "mb-3",
+            "text-break"
+        );
+
+        const innerDiv = document.createElement("div");
+        innerDiv.classList.add(
+            "p-2",
+            "rounded",
+            "text-break"
+        );
+        if (isUser) {
+            innerDiv.classList.add("bg-primary", "text-white")
+        } else {
+            innerDiv.classList.add("bg-light")
+        }
+
+        innerDiv.style.maxWidth = "75%";
+        innerDiv.textContent = text;
+
+        messageDiv.appendChild(innerDiv);
+        chatContainer.appendChild(messageDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
 </script>
