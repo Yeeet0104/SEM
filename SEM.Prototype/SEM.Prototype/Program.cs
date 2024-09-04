@@ -1,7 +1,13 @@
+using SEM.Prototype.Hubs;
+using SEM.Prototype.Services.Chatbot;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
+//builder.Services.AddSingleton<OllamaProviderLoader>();
+builder.Services.AddSingleton<IChatbotService, ChatbotService>();
 
 var app = builder.Build();
 
@@ -23,5 +29,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapHub<ChatbotHub>("/chatbotHub");
+
 
 app.Run();

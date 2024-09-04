@@ -6,4 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="LangChain.Core" Version="0.15.0" />
+    <PackageReference Include="LangChain.Databases.Sqlite" Version="0.15.2" />
+    <PackageReference Include="LangChain.DocumentLoaders.Html" Version="0.15.0" />
+    <PackageReference Include="LangChain.DocumentLoaders.Pdf" Version="0.15.0" />
+    <PackageReference Include="LangChain.Providers.LLamaSharp" Version="0.15.0" />
+    <PackageReference Include="LangChain.Providers.Ollama" Version="0.15.0" />
+  </ItemGroup>
+
 </Project>
