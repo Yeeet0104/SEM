@@ -1,12 +1,13 @@
 using SEM.Prototype.Hubs;
-using SEM.Prototype.Services;
+using SEM.Prototype.Services.Chatbot;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
-builder.Services.AddSingleton<ChatbotService>();
+//builder.Services.AddSingleton<OllamaProviderLoader>();
+builder.Services.AddSingleton<IChatbotService, ChatbotService>();
 
 var app = builder.Build();
 

@@ -1,21 +1,24 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using SEM.Prototype.Services;
+using SEM.Prototype.Services.Chatbot;
 
 namespace SEM.Prototype.Hubs
 {
     public class ChatbotHub : Hub
     {
-        private readonly ChatbotService _chatbotService;
-        public ChatbotHub(ChatbotService chatbotService)
+        private readonly IChatbotService _chatbotService;
+        public ChatbotHub(IChatbotService chatbotService)
         {
             _chatbotService = chatbotService;
         }
 
         public async Task ChatAsync(string message)
         {
-            //TODO : Implement streaming
+            //TODO : Implement streaming? / maybe remove streaming
+            var response = await _chatbotService.ChatAsync(message);
 
-            await Clients.Caller.SendAsync("ReceiveMessage", message);
+            var formattedMessage = response.Replace("\n", "<br />").Replace("\r", "");
+
+            await Clients.Caller.SendAsync("ReceiveMessage", response);
         }
     }
 }

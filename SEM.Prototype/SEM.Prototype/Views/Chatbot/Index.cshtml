@@ -50,7 +50,13 @@
         addMessage("Connection failed ..." + err.toString(), false);
     });
 
-    dom.sendBtn.addEventListener("click", function () {
+    dom.userInput.addEventListener("keyup", function (event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    });
+    dom.sendBtn.addEventListener("click", sendMessage);
+    function sendMessage() {
         const message = dom.userInput.value;
 
         if (message.trim() === "") {
@@ -67,7 +73,7 @@
             });
 
         dom.userInput.value = "";
-    });
+    }
 
     function addMessage(text, isUser = true) {
         const messageDiv = document.createElement("div");
