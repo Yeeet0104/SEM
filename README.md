@@ -27,6 +27,8 @@
    > **NOTE : ** 
    >
    > - Checkout the **terminal** for the status, if you are not interested in the code.
-   > - First load might be slower, because it will pull the data from website into vector.db (sqlite)
+   > - First time run might be slower, because it will load model from disk
+   > - Website data will pull into the vector.db if the collection is not exist.
    > - Mostly the response is not good enough, the data need to be cleaner and structured instead of directly get the html from the website
 
+4. **Stop the `Ollama` server manually**, so it will not retain in memory!!

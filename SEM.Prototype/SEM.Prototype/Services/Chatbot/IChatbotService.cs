@@ -2,8 +2,7 @@
 {
     public interface IChatbotService
     {
-        Task<string> ChatAsync(string question, EventHandler<string> OnResponse);
+        Task<string> ChatAsync(string question, EventHandler<string>? OnResponse = null);
 
-        Task<string> ChatAsync(string question);
     }
 }

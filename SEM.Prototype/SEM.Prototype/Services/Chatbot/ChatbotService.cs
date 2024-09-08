@@ -1,19 +1,14 @@
 ﻿using LangChain.Chains;
 using LangChain.Chains.HelperChains;
-using LangChain.Chains.LLM;
-using LangChain.Chains.StackableChains;
 using LangChain.Databases;
 using LangChain.Databases.Sqlite;
 using LangChain.Extensions;
 using LangChain.Memory;
-using LangChain.Prompts;
 using LangChain.Providers;
 using LangChain.Providers.Ollama;
-using LangChain.Schema;
 using Ollama;
 using SEM.Prototype.Utils;
-using System.IO.Pipelines;
-using System.Runtime.CompilerServices;
+
 
 namespace SEM.Prototype.Services.Chatbot
 {
@@ -34,7 +29,11 @@ namespace SEM.Prototype.Services.Chatbot
             {
                 Temperature = 0.2f,
                 Stop = ["Human:"],
-                NumGpu = 20,
+                AdditionalProperties = new Dictionary<string, object>
+                {
+                    // configured based on : https://github.com/ollama/ollama/pull/2146#issue-2094810743 
+                    { "keep_alive", "0m" } //loaded immediately after generation, so it will not always reload from disk!
+                }
             });
 
             _embeddingModel = new OllamaEmbeddingModel(provider, id: "all-minilm");
@@ -46,7 +45,7 @@ namespace SEM.Prototype.Services.Chatbot
             _vectorDatabase = new SqLiteVectorDatabase(dataSource: "vectors.db");
 
             var template = @"
-The following is a friendly conversation between a human and an AI. AI will Response to the human's input based on the context given below. Below context is the information of Faculty of Computing and Information Technology (FOCS) of Tunku Abdul Rahman University of Management and Technology (TARUMT) where formally is called Tunku Abdul Rahman University College (TARUC).
+The following is a friendly and informative conversation between a human and an AI. The AI will respond to the human's queries based on the context provided below. AI will provide clear, concise, and friendly responses that align with the university's values and maintain a supportive tone throughout the conversation. This AI is designed to assist students, prospective students, and others by offering accurate and helpful information about the Faculty of Computing and Information Technology (FOCS) at Tunku Abdul Rahman University of Management and Technology (TARUMT), previously known as Tunku Abdul Rahman University College (TARUC).
 
 {context}
 
@@ -64,23 +63,7 @@ AI: ";
 
         public async Task<string> ChatAsync(string question, EventHandler<string>? OnResponse = null)
         {
-            // Stream the response to the console
-            // NOTE : Seems like it will have some duplicated value if directly print to console, not sure why, but when concatenate to a string, it will be fine
-            // TODO : Fix or remove stream
-            // update : wtf when i changed to scoped instead of singleton, the stream is working fine
-            // update1 : but addscoped will lose context (chat history), stick to singleton for now
-            var buf = "";
-            _chatModel.PartialResponseGenerated += (_, res) =>
-            {
-                var newContent = res;
-                buf += res;
-                Console.Write(res);
-            };
-
-            _chatModel.CompletedResponseGenerated += (_, res) =>
-            {
-                //Console.WriteLine(res);
-            };
+            _chatModel.PartialResponseGenerated += OnResponse;
 
             var vectorCollection = await _vectorDatabase.GetOrCreateCollectionAsync("focs", dimensions: 384);
 
@@ -92,17 +75,14 @@ AI: ";
 
             Console.WriteLine("Getting similar documents...");
             var lastMessage = _memory.ChatHistory.Messages.LastOrDefault();
-            var searchInput = (lastMessage.Content ?? "") + question;
+            var searchInput = (lastMessage.Content ?? " ") + " " + question; // adding the last message to the search input
             Console.WriteLine("Search Input : " + searchInput);
             var similarDocuments = await vectorCollection.GetSimilarDocuments(
                 _embeddingModel,
                 question,
                 amount: 5);
-            //Console.WriteLine("Similar Document retrieved : ");
-            //Console.WriteLine(similarDocuments.AsString());
 
             Console.WriteLine("\nResponding...");
-
             // Build a new chain by prepending the user's input to the original chain
             var currentChain = Chain.Set(question, "input")
                 | Chain.Set(similarDocuments.AsString(), "context")
@@ -110,14 +90,10 @@ AI: ";
 
             var answers = await currentChain.RunAsync("text", CancellationToken.None) ?? "Error in Model";
 
-            Console.WriteLine(buf); // This proven that the concatenation of the response is correct
+            // detach the event handler, so there is no duplicate response!!
+            _chatModel.PartialResponseGenerated -= OnResponse;
 
             return answers;
-        }
-
-        public async Task<string> ChatAsync(string question)
-        {
-            return await ChatAsync(question, null).ConfigureAwait(false);
         }
 
         private BaseChatMemory GetChatMemory()

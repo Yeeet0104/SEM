@@ -2,6 +2,8 @@
     ViewBag.Title = "Chatbot";
 }
 
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
 <div class="d-flex position-relative flex-column">
     <div class="text-center">
         <h1>Chatbot</h1>
@@ -29,13 +31,18 @@
 
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script>
-    var connection = new signalR.HubConnectionBuilder().withUrl("/chatbotHub").build();
+    var connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chatbotHub", { transport: signalR.HttpTransportType.WebSockets })
+        .configureLogging(signalR.LogLevel.Information)  // Set to Debug for more detail
+        .build();
 
     const dom = {
         chatContainer: document.getElementById("chatContainer"),
         userInput: document.getElementById("userInput"),
         sendBtn: document.getElementById("sendBtn"),
     }
+
+    let tempInput = "";
 
     dom.sendBtn.disabled = true;
 
@@ -55,7 +62,9 @@
             sendMessage();
         }
     });
+
     dom.sendBtn.addEventListener("click", sendMessage);
+
     function sendMessage() {
         const message = dom.userInput.value;
 
@@ -65,12 +74,26 @@
 
         addMessage(message);
 
-        connection
-            .invoke("ChatAsync", message)
-            .catch(function (err) {
-                console.error(err.toString());
-                addMessage("Failed to send message: " + err.toString(), false);
-            });
+        // connection
+        //     .invoke("ChatAsync", message)
+        //     .catch(function (err) {
+        //         console.error(err.toString());
+        //         addMessage("Failed to send message: " + err.toString(), false);
+        //     });
+        tempInput = "";
+        addMessage("", false);
+        connection.stream("ChatStreamAsync", message)
+            .subscribe({
+                next: (item) => {
+                    console.log("From AI: ", item);
+                    appendToLastAIMessage(item);
+                },
+                complete: () => console.log("Stream completed"),
+                error: (err) => {
+                    console.error("Error during streaming", err);
+                    appendToLastAIMessage("Error: " + err.toString(), false);
+                }
+            })
 
         dom.userInput.value = "";
     }
@@ -102,5 +125,21 @@
         messageDiv.appendChild(innerDiv);
         chatContainer.appendChild(messageDiv);
         chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    // Append new text to the last AI message instead of creating a new div
+    function appendToLastAIMessage(text) {
+        const lastMessageDivs = dom.chatContainer.getElementsByClassName('justify-content-start');
+        let lastAIMessageDiv;
+
+        if (lastMessageDivs.length > 0) {
+            lastAIMessageDiv = lastMessageDivs[lastMessageDivs.length - 1].querySelector('div');
+        }
+
+        tempInput += text;
+        lastAIMessageDiv.innerHTML = marked.parse(tempInput)
+
+        // Scroll to the latest message
+        dom.chatContainer.scrollTop = dom.chatContainer.scrollHeight;
     }
 </script>
