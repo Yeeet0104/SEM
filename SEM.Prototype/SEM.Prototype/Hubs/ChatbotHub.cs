@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using SEM.Prototype.Services.Chatbot;
+using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 
 namespace SEM.Prototype.Hubs
 {
@@ -13,12 +15,36 @@ namespace SEM.Prototype.Hubs
 
         public async Task ChatAsync(string message)
         {
-            //TODO : Implement streaming? / maybe remove streaming
             var response = await _chatbotService.ChatAsync(message);
 
-            var formattedMessage = response.Replace("\n", "<br />").Replace("\r", "");
+            //var formattedMessage = response.Replace("\n", "<br />").Replace("\r", "");
 
             await Clients.Caller.SendAsync("ReceiveMessage", response);
+        }
+
+        public async IAsyncEnumerable<string> ChatStreamAsync(
+            string message,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var channel = Channel.CreateUnbounded<string>();
+
+            EventHandler<string> onResponse = (sender, res) =>
+            {
+                channel.Writer.TryWrite(res);
+                Console.WriteLine("Response: " + res);
+            };
+
+            // DO NOT await this call, else it will wait for the entire response before returning
+             _chatbotService.ChatAsync(message, onResponse);
+
+            // Yield the items as they are written to the channel
+            await foreach (var item in channel.Reader.ReadAllAsync(cancellationToken))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                yield return item;
+            }
+            
+            channel.Writer.Complete();
         }
     }
 }
