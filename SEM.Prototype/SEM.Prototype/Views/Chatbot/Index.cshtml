@@ -46,8 +46,13 @@
 
     dom.sendBtn.disabled = true;
 
-    connection.on("ReceiveMessage", function (message) {
-        addMessage(message, false);
+    // connection.on("ReceiveMessage", function (message) {
+    //     addMessage(message, false);
+    // });
+
+    connection.on("CompleteRespone", function (res) {
+        console.log("Completed", res);
+        dom.sendBtn.disabled = false;
     });
 
     connection.start().then(function () {
@@ -67,6 +72,8 @@
 
     function sendMessage() {
         const message = dom.userInput.value;
+        dom.sendBtn.disabled = true;
+        dom.userInput.disabled = true;
 
         if (message.trim() === "") {
             return;
@@ -88,7 +95,11 @@
                     console.log("From AI: ", item);
                     appendToLastAIMessage(item);
                 },
-                complete: () => console.log("Stream completed"),
+                complete: () => {
+                    dom.sendBtn.disabled = false;
+                    dom.userInput.disabled = false;
+                    dom.userInput.focus();
+                },
                 error: (err) => {
                     console.error("Error during streaming", err);
                     appendToLastAIMessage("Error: " + err.toString(), false);
