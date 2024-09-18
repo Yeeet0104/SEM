@@ -1,0 +1,284 @@
+﻿@model SEM.Prototype.Models.CalculatorViewModel
+
+@{
+    ViewBag.Title = "Fee Calculator";
+}
+
+@if (ViewBag.TotalFee != null)
+{
+    <div class="alert alert-info">
+        <strong>Total Fee:</strong> @ViewBag.TotalFee
+    </div>
+}
+
+<h2>Fee Calculator</h2>
+
+<form asp-action="Calculate" method="post">
+    <div class="form-group">
+        <label for="Programme">Programme</label>
+        <select id="Programme" name="Programme" class="form-control" onchange="updateFields()">
+            <option value="">Select Programme</option>
+            <option value="Foundation">Foundation</option>
+            <option value="Diploma">Diploma</option>
+            <option value="Degree">Degree</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="Course">Courses</label>
+        <select id="Course" name="Course" class="form-control">
+            <option value="">Select Course</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="EntryCriteria">Entry Criteria</label>
+        <select id="EntryCriteria" name="EntryCriteria" class="form-control">
+            <option value="">Select Entry Criteria</option>
+        </select>
+    </div>
+
+    <div class="form-group" id="ResultField">
+        <label for="Result">Result</label>
+        <select id="Result" name="Result" class="form-control">
+            <option value="">Select Result</option>
+        </select>
+    </div>
+
+    <div class="form-group" id="CgpaField" style="display: none;">
+        <label for="Cgpa">CGPA</label>
+        <input type="number" id="Cgpa" name="Cgpa" class="form-control" step="0.01" placeholder="Enter CGPA" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Calculate Fee</button>
+</form>
+
+@section Scripts {
+    <script>
+        function updateFields() {
+            var programme = document.getElementById("Programme").value;
+            var coursesSelect = document.getElementById("Course");
+            var entryCriteriaSelect = document.getElementById("EntryCriteria");
+            var resultSelect = document.getElementById("Result");
+            var resultField = document.getElementById("ResultField");
+            var cgpaField = document.getElementById("CgpaField");
+
+            // Clear previous options
+            coursesSelect.innerHTML = '<option value="">Select Course</option>';
+            entryCriteriaSelect.innerHTML = '<option value="">Select Entry Criteria</option>';
+            resultSelect.innerHTML = '<option value="">Select Result</option>';
+
+            // Define options for each programme
+            var foundationCourses = [
+                "Foundation in Computing"
+            ];
+
+            var diplomaCourses = [
+                "Diploma in Computer Science",
+                "Diploma in Software Engineering",
+                "Diploma in Information Technology"
+            ];
+
+            var degreeCourses = [
+                "Bachelor of Science (Honours) in Management Mathematics with Computing",
+                "Bachelor of Information Systems (Honours) in Enterprise Information Systems",
+                "Bachelor of Computer Science (Honours) in Interactive Software Technology",
+                "Bachelor of Information Technology (Honours) in Information Security",
+                "Bachelor of Computer Science (Honours) in Data Science",
+                "Bachelor of Information Technology (Honours) in Software Systems Development",
+                "Bachelor of Software Engineering (Honours)"
+            ];
+
+            var foundationCriteria = [
+                "SPM",
+                "O Level"
+            ];
+
+            var diplomaCriteria = [
+                "SPM/O Level"
+            ];
+
+            var degreeCriteria = [
+                "STPM / A Level",
+                "UEC",
+                "TARUMT Diploma / TARUMT Foundation / Matriculation"
+            ];
+
+            var resultsOptions = {
+                "Diploma": {
+                    "SPM/O Level": [
+                        "SPM - 7As",
+                        "8As",
+                        "8A+ / A and above",
+                        "O Level - 6As",
+                        "7As",
+                        "8As and above"
+                    ]
+                },
+                "Foundation": {
+                    "SPM": [
+                        "5As",
+                        "6As",
+                        "7As",
+                        "8As",
+                        "8A+ / A and above"
+                    ],
+                    "O Level": [
+                        "6As",
+                        "7As",
+                        "8As and above"
+                    ]
+                },
+                "Degree": {
+                    "STPM / A Level": [
+                        "1A",
+                        "2As",
+                        "3As and above"
+                    ],
+                    "UEC": [
+                        "5As",
+                        "6As",
+                        "7As",
+                        "8As and above"
+                    ]
+                }
+            };
+
+            // Add options based on the selected programme
+            var courses;
+            var criteria;
+            var results = [];
+            switch (programme) {
+                case "Diploma":
+                    courses = diplomaCourses;
+                    criteria = diplomaCriteria;
+                    results = resultsOptions["Diploma"];
+                    resultField.style.display = "block";
+                    cgpaField.style.display = "none";
+                    updateResults();
+                    break;
+                case "Degree":
+                    courses = degreeCourses;
+                    criteria = degreeCriteria;
+                    resultField.style.display = "block";
+                    cgpaField.style.display = "none";
+                    updateResults();
+                    break;
+                case "Foundation":
+                    courses = foundationCourses;
+                    criteria = foundationCriteria;
+                    results = resultsOptions["Foundation"];
+                    resultField.style.display = "block";
+                    cgpaField.style.display = "none";
+                    break;
+                default:
+                    courses = [];
+                    criteria = [];
+                    results = [];
+                    resultField.style.display = "none";
+                    cgpaField.style.display = "none";
+            }
+
+            // Populate courses
+            courses.forEach(function (option) {
+                var opt = document.createElement("option");
+                opt.value = option;
+                opt.text = option;
+                coursesSelect.add(opt);
+            });
+
+            // Populate entry criteria
+            criteria.forEach(function (option) {
+                var opt = document.createElement("option");
+                opt.value = option;
+                opt.text = option;
+                entryCriteriaSelect.add(opt);
+            });
+        }
+
+        function updateResults() {
+            var entryCriteria = document.getElementById("EntryCriteria").value;
+            var programme = document.getElementById("Programme").value;
+            var resultSelect = document.getElementById("Result");
+            var resultField = document.getElementById("ResultField");
+            var cgpaField = document.getElementById("CgpaField");
+
+            // Clear previous options
+            resultSelect.innerHTML = '<option value="">Select Result</option>';
+
+            var resultsOptions = {
+                "Diploma": {
+                    "SPM/O Level": [
+                        "SPM - 7As",
+                        "8As",
+                        "8A+ / A and above",
+                        "O Level - 6As",
+                        "7As",
+                        "8As and above"
+                    ]
+                },
+                "Foundation": {
+                    "SPM": [
+                        "5As",
+                        "6As",
+                        "7As",
+                        "8As",
+                        "8A+ / A and above"
+                    ],
+                    "O Level": [
+                        "6As",
+                        "7As",
+                        "8As and above"
+                    ]
+                },
+                "Degree": {
+                    "STPM / A Level": [
+                        "1A",
+                        "2As",
+                        "3As and above"
+                    ],
+                    "UEC": [
+                        "5As",
+                        "6As",
+                        "7As",
+                        "8As and above"
+                    ]
+                }
+            };
+
+            // Update results field and CGPA field based on selected criteria
+            if (programme === "Degree") {
+                if (entryCriteria === "TARUMT Diploma / TARUMT Foundation / Matriculation") {
+                    resultField.style.display = "none";
+                    cgpaField.style.display = "block";
+                } else if (resultsOptions["Degree"] && resultsOptions["Degree"][entryCriteria]) {
+                    resultsOptions["Degree"][entryCriteria].forEach(function (option) {
+                        var opt = document.createElement("option");
+                        opt.value = option;
+                        opt.text = option;
+                        resultSelect.add(opt);
+                    });
+                    resultField.style.display = "block";
+                    cgpaField.style.display = "none";
+                }
+            } else if (resultsOptions[programme] && resultsOptions[programme][entryCriteria]) {
+                resultsOptions[programme][entryCriteria].forEach(function (option) {
+                    var opt = document.createElement("option");
+                    opt.value = option;
+                    opt.text = option;
+                    resultSelect.add(opt);
+                });
+                resultField.style.display = "block";
+                cgpaField.style.display = "none";
+            } else {
+                resultField.style.display = "none";
+                cgpaField.style.display = "none";
+            }
+        }
+
+        // Attach event listeners
+        document.getElementById("EntryCriteria").addEventListener("change", updateResults);
+    </script>
+}
+
+
