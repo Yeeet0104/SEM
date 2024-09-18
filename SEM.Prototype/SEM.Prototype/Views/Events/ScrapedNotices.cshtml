@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Scraped Notices";
+}
+
+<h1>Scraped Notices</h1>
+
+@if (ViewBag.PageContent != null)
+{
+    <div>
+        <!-- Display the raw HTML content, or you can parse it to show specific parts -->
+        @Html.Raw(ViewBag.PageContent)
+    </div>
+}
+else
+{
+    <p>No content available.</p>
+}

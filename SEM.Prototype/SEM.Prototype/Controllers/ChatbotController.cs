@@ -10,5 +10,6 @@ namespace SEM.Prototype.Controllers
         {
             return View();
         }
+
     }
 }
