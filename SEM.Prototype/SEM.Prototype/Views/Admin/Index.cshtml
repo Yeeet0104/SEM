@@ -1,0 +1,143 @@
+﻿@model List<EventModel>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<h2>Manage Events</h2>
+
+<!-- Form for adding or editing events -->
+<div>
+    <form id="eventForm" method="post" asp-action="SaveEvent">
+        <input type="hidden" id="Id" name="Id" value="0" />
+
+        <div class="form-group">
+            <label for="Title">Title</label>
+            <input type="text" id="Title" name="Title" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label for="Start">Start Date and Time</label>
+            <input type="datetime-local" id="Start" name="Start" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+            <label for="Description">Description</label>
+            <textarea id="Description" name="Description" class="form-control"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+    <button id="clearEventsBtn" class="btn btn-danger">Clear All Events</button>
+</div>
+
+<!-- Table to display current events -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Start</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="eventTable">
+        @foreach (var evt in Model)
+        {
+            <tr>
+                <td>@evt.Title</td>
+                <td>@evt.Start</td>
+                <td>@evt.Description</td>
+                <td>
+                    <button class="btn btn-warning" onclick="editEvent(@evt.Id)">Edit</button>
+                    <button class="btn btn-danger" onclick="deleteEvent(@evt.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        // Form submission to save event
+        $('#eventForm').submit(function (e) {
+            e.preventDefault(); // Prevent default form submission
+
+            $.ajax({
+                url: '/Admin/SaveEvent',  // URL for the form submission
+                type: 'POST',
+                data: $(this).serialize(),  // Serialize the form data
+                success: function (response) {
+                    if (response.success) {
+                        alert('Event saved successfully!');
+                        location.reload(); // Reload the page to update events list
+                    } else {
+                        alert('Error saving event.');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred.');
+                }
+            });
+        });
+
+        // Clear all events
+        $('#clearEventsBtn').click(function () {
+            $.ajax({
+                url: '/Admin/ClearEvents',  // Make sure this matches the controller route
+                type: 'POST',
+                success: function (response) {
+                    if (response.success) {
+                        alert('All events have been cleared!');
+                        location.reload();  // Optionally reload the page to reflect changes
+                    } else {
+                        alert('Error occurred while clearing events.');
+                    }
+                },
+                error: function () {
+                    alert('Failed to clear events.');
+                }
+            });
+        });
+    });
+
+    // Function to edit an event
+    function editEvent(eventId) {
+        $.ajax({
+            url: '/Admin/GetEvent/' + eventId,  // Fetch the event details
+            type: 'GET',
+            success: function (event) {
+                // Populate the form fields with the event data
+                $('#Id').val(event.id);
+                $('#Title').val(event.title);
+                $('#Start').val(new Date(event.start).toISOString().slice(0, 16));  // Format the date for datetime-local input
+                $('#Description').val(event.description);
+
+                // Scroll to the form smoothly
+                $('html, body').animate({
+                    scrollTop: $("#eventForm").offset().top
+                }, 600);  // 600ms animation time
+            },
+            error: function () {
+                alert('Failed to fetch event details.');
+            }
+        });
+    }
+
+    // Function to delete an event
+    function deleteEvent(eventId) {
+        if (confirm("Are you sure you want to delete this event?")) {
+            $.ajax({
+                url: '/Admin/DeleteEvent/' + eventId,  // Send request to delete the event
+                type: 'POST',
+                success: function (response) {
+                    if (response.success) {
+                        alert('Event deleted successfully!');
+                        location.reload();  // Reload the page to reflect changes
+                    } else {
+                        alert('Failed to delete the event.');
+                    }
+                },
+                error: function () {
+                    alert('Failed to delete event.');
+                }
+            });
+        }
+    }
+</script>
