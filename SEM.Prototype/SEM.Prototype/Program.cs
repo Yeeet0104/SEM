@@ -1,11 +1,5 @@
 using SEM.Prototype.Hubs;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using SEM.Prototype.Utils;
-using SEM.Prototype.Controllers;
 using SEM.Prototype.Services.Chatbot;
-using SEM.Prototype.Services.Calc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +8,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
 //builder.Services.AddSingleton<OllamaProviderLoader>();
 builder.Services.AddSingleton<IChatbotService, ChatbotService>();
-builder.Services.AddTransient<CalculatorService>();
-
-
 
 var app = builder.Build();
 
@@ -40,5 +31,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapHub<ChatbotHub>("/chatbotHub");
+
 
 app.Run();
