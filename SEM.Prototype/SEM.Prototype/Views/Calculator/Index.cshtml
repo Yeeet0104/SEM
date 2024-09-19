@@ -11,6 +11,14 @@
     </div>
 }
 
+@if (!Html.ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong> @Html.ValidationSummary() </strong>
+    </div>
+}
+
+
 <h2>Fee Calculator</h2>
 
 <form asp-action="Calculate" method="post">

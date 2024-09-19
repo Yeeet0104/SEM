@@ -21,6 +21,7 @@ namespace SEM.Prototype.Controllers
         [HttpPost]
         public IActionResult Calculate(CalculatorViewModel model)
         {
+
             if (ModelState.IsValid)
             {
                 // Calculate the total fees
@@ -33,6 +34,13 @@ namespace SEM.Prototype.Controllers
             }
             else
             {
+                Console.WriteLine($"Programme : {model.Programme}\n" +
+                    $"Course {model.Course}\n" +
+                    $"Entry Criteria : {model.EntryCriteria}\n" +
+                    $"Result : {model.Result}\n" +
+                    $"CGPA: {model.CGPA}");
+
+                Console.WriteLine("Invalid model state");
                 // Handle invalid model state
                 return View("Index", model); // Return to Index view with model
             }

@@ -1,9 +1,4 @@
 using SEM.Prototype.Hubs;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using SEM.Prototype.Utils;
-using SEM.Prototype.Controllers;
 using SEM.Prototype.Services.Chatbot;
 using SEM.Prototype.Services.Calc;
 

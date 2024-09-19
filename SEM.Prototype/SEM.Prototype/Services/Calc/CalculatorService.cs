@@ -72,12 +72,14 @@ namespace SEM.Prototype.Services.Calc
         {
             if (model == null)
             {
+                Console.WriteLine("Model is null");
                 throw new ArgumentNullException(nameof(model));
             }
 
             // Retrieve the base fee from the dictionary based on the course selected
             if (!_courseFees.TryGetValue(model.Course, out var baseFee))
             {
+                Console.WriteLine("Invalid course selected");
                 throw new ArgumentException("Invalid course selected.");
             }
 
@@ -101,6 +103,8 @@ namespace SEM.Prototype.Services.Calc
                     totalFee -= totalFee * discountPercentage;
                 }
             }
+
+            Console.WriteLine($"Total fee: {totalFee}");
 
             return totalFee;
         }
