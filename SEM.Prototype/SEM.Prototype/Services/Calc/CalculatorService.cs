@@ -68,7 +68,7 @@ namespace SEM.Prototype.Services.Calc
         }
     };
 
-        public decimal CalculateTotalFees(CalculatorViewModel model)
+        public FeeBreakdown CalculateTotalFees(CalculatorViewModel model)
         {
             if (model == null)
             {
@@ -83,31 +83,67 @@ namespace SEM.Prototype.Services.Calc
                 throw new ArgumentException("Invalid course selected.");
             }
 
-            // Start with the base fee from the course
-            decimal totalFee = baseFee;
+            // Calculate the breakdown of fees
+            var breakdown = new FeeBreakdown
+            {
+                BaseFee = baseFee,
+                RegistrationFee = _extraFees["Registration Fee"] * 2,
+                CautionMoney = _extraFees["Caution Money"] * 2,
+                InsurancePremium = _extraFees["Insurance Premium"] * 2,
+                FacilitiesResourceFee = _extraFees["Facilities & Resource Fee"] * 2,
+                LabWorkshopFee = _extraFees["Laboratory/ Workshop Fee"] * 2,
+                AwardAssessmentFee = _extraFees["Award Assessment Fee"] * 2,
+            };
 
-            // Add extra fees
-            totalFee += _extraFees["Registration Fee"] * 2;
-            totalFee += _extraFees["Caution Money"] * 2;
-            totalFee += _extraFees["Insurance Premium"] * 2;
-            totalFee += _extraFees["Facilities & Resource Fee"] * 2;
-            totalFee += _extraFees["Laboratory/ Workshop Fee"] * 2;
-            totalFee += _extraFees["Award Assessment Fee"] * 2;
+            // Initialize total course fee and CGPA discount
+            decimal totalCourseFee = breakdown.BaseFee;
+            decimal cgpaDiscount = 0;
 
-            // Apply scholarship discount if criteria and results are selected
+            // Apply CGPA logic
+            if (model.Programme == "Degree" && model.EntryCriteria == "TARUMT Diploma / TARUMT Foundation / Matriculation")
+            {
+                if (model.CGPA >= 3.85m)
+                {
+                    cgpaDiscount = totalCourseFee; // 100% discount
+                    totalCourseFee = 0; // Set course fee to zero
+                }
+                else if (model.CGPA >= 3.75m)
+                {
+                    cgpaDiscount = totalCourseFee * 0.50m; // 50% discount
+                    totalCourseFee /= 2; // Halve the course fee
+                }
+            }
+
+            // Calculate total fee
+            decimal totalFee = totalCourseFee +
+                               breakdown.RegistrationFee +
+                               breakdown.CautionMoney +
+                               breakdown.InsurancePremium +
+                               breakdown.FacilitiesResourceFee +
+                               breakdown.LabWorkshopFee +
+                               breakdown.AwardAssessmentFee;
+
+            // Store CGPA discount in the breakdown
+            breakdown.Discount = cgpaDiscount;
+
+            // Calculate any applicable scholarship discount (only on total course fee)
             if (!string.IsNullOrEmpty(model.EntryCriteria) && !string.IsNullOrEmpty(model.Result))
             {
                 if (_scholarshipDiscounts.TryGetValue(model.EntryCriteria, out var resultDiscounts) &&
                     resultDiscounts.TryGetValue(model.Result, out var discountPercentage))
                 {
-                    totalFee -= totalFee * discountPercentage;
+                    breakdown.Discount += totalCourseFee * discountPercentage; // Add scholarship discount to breakdown
+                    totalFee -= totalCourseFee * discountPercentage; // Subtract scholarship discount from total fee
                 }
             }
 
-            Console.WriteLine($"Total fee: {totalFee}");
+            breakdown.TotalFee = totalFee;
 
-            return totalFee;
+            return breakdown;
         }
 
+
     }
+
+
 }

@@ -4,13 +4,6 @@
     ViewBag.Title = "Fee Calculator";
 }
 
-@if (ViewBag.TotalFee != null)
-{
-    <div class="alert alert-info">
-        <strong>Total Fee:</strong> @ViewBag.TotalFee
-    </div>
-}
-
 @if (!Html.ViewData.ModelState.IsValid)
 {
     <div class="alert alert-danger">
@@ -59,6 +52,30 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Calculate Fee</button>
+
+    @if (ViewBag.FeeBreakdown != null)
+    {
+        var breakdown = (FeeBreakdown)ViewBag.FeeBreakdown;
+        <div class="alert alert-info">
+            <h3>Fee Breakdown:</h3>
+            <ul>
+                <li>Base Course Fee: @breakdown.BaseFee.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
+                <li>Registration Fee: @breakdown.RegistrationFee.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
+                <li>Caution Money: @breakdown.CautionMoney.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
+                <li>Insurance Premium: @breakdown.InsurancePremium.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
+                <li>Facilities & Resource Fee: @breakdown.FacilitiesResourceFee.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
+                <li>Laboratory/ Workshop Fee: @breakdown.LabWorkshopFee.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
+                <li>Award Assessment Fee: @breakdown.AwardAssessmentFee.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
+                @if (breakdown.Discount > 0)
+                {
+                    <li>Scholarship Discount: @breakdown.Discount.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
+                }
+                <li><strong>Total Fee: @breakdown.TotalFee.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</strong></li>
+            </ul>
+        </div>
+    }
+
+
 </form>
 
 @section Scripts {
