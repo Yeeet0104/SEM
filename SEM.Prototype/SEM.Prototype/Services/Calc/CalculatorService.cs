@@ -76,6 +76,11 @@ namespace SEM.Prototype.Services.Calc
                 throw new ArgumentNullException(nameof(model));
             }
 
+            if (model.CGPA < 0 || model.CGPA > 4.0m)
+            {
+                throw new ArgumentOutOfRangeException(nameof(model.CGPA), "CGPA must be between 0 and 4.0.");
+            }
+
             // Retrieve the base fee from the dictionary based on the course selected
             if (!_courseFees.TryGetValue(model.Course, out var baseFee))
             {
@@ -87,8 +92,8 @@ namespace SEM.Prototype.Services.Calc
             var breakdown = new FeeBreakdown
             {
                 BaseFee = baseFee,
-                RegistrationFee = _extraFees["Registration Fee"] * 2,
-                CautionMoney = _extraFees["Caution Money"] * 2,
+                RegistrationFee = _extraFees["Registration Fee"],
+                CautionMoney = _extraFees["Caution Money"],
                 InsurancePremium = _extraFees["Insurance Premium"] * 2,
                 FacilitiesResourceFee = _extraFees["Facilities & Resource Fee"] * 2,
                 LabWorkshopFee = _extraFees["Laboratory/ Workshop Fee"] * 2,
