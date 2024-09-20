@@ -23,17 +23,26 @@ namespace SEM.Prototype.Controllers
         {
             if (ModelState.IsValid)
             {
-                var feeBreakdown = _calculatorService.CalculateTotalFees(model);
-                ViewBag.FeeBreakdown = feeBreakdown;
+                try
+                {
+                    // Calculate the total fees
+                    FeeBreakdown breakdown = _calculatorService.CalculateTotalFees(model);
+                    ViewBag.FeeBreakdown = breakdown; // Pass the breakdown to the view
+                    return View("Index", model);
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    ModelState.AddModelError(nameof(model.CGPA), ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "An error occurred while calculating fees. Please try again.");
+                }
+            }
 
-                return View("Index", model); // Return to Index view with model
-            }
-            else
-            {
-                // Handle invalid model state
-                return View("Index", model); // Return to Index view with model
-            }
+            return View("Index", model); // Return to Index view with model
         }
+
 
     }
 }
