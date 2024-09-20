@@ -32,3 +32,14 @@
    > - Mostly the response is not good enough, the data need to be cleaner and structured instead of directly get the html from the website
 
 4. **Stop the `Ollama` server manually**, so it will not retain in memory!!
+
+
+
+## Instruction for database ( SQL LITE) 
+1. go console type these
+
+dotnet tool install --global dotnet-ef
+
+dotnet ef migrations add InitialCreate
+
+dotnet ef database update

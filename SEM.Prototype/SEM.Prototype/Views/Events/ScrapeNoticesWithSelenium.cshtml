@@ -1,0 +1,23 @@
+﻿@model List<(string Title, string Faculty, string Date)>
+
+<h2>Scraped Notices</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Faculty</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var notice in Model)
+        {
+            <tr>
+                <td>@notice.Title</td>
+                <td>@notice.Faculty</td>
+                <td>@notice.Date</td>
+            </tr>
+        }
+    </tbody>
+</table>
