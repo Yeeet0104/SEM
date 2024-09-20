@@ -24,7 +24,7 @@ namespace SEM.Prototype.Utils
 
             // Define the list of URLs
             var urls = new List<string>
-            {
+            { 
                 "https://focs.tarc.edu.my/",
                 "https://focs.tarc.edu.my/about-us",
                 "https://www.tarc.edu.my/mqa/programmes-accreditated-by-mqa/kuala-lumpur-main-campus/faculty-of-computing-and-information-technology/",

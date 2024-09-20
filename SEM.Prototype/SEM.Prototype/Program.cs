@@ -3,6 +3,7 @@ using SEM.Prototype.Hubs;
 using SEM.Prototype.Models;
 using SEM.Prototype.Services.Chatbot;
 using System;
+using SEM.Prototype.Services.Calc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,9 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<IChatbotService, ChatbotService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=app.db"));
+builder.Services.AddTransient<CalculatorService>();
+
+
 
 var app = builder.Build();
 
