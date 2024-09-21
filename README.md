@@ -47,3 +47,10 @@ dotnet ef database update
 dotnet ef migrations add AddIdentityToAppDbContext
 
 dotnet ef database update
+
+
+## Instruction for Online IDE
+1. Install this NuGet Packages for docker
+   > - Install-Package Docker.DotNet
+2. Install the [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
+3. Go on the tray, find whale icon right click and make sure to switch it to linux container. If you are already seeing switch to linux container, then its fine.
