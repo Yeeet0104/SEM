@@ -35,21 +35,13 @@
 
 
 
-## Instruction for database ( SQL LITE) 
+### Instruction for database ( SQL LITE) 
 1. go console type these
-
-dotnet tool install --global dotnet-ef
-
-dotnet ef migrations add InitialCreate
-
-dotnet ef database update
-
-dotnet ef migrations add AddIdentityToAppDbContext
-
-dotnet ef database update
+- `dotnet tool install --global dotnet-ef`
+- `dotnet ef database update`
 
 
-## Instruction for Online IDE
+### Instruction for Online IDE
 1. Install this NuGet Packages for docker
    > - Install-Package Docker.DotNet
 2. Install the [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
