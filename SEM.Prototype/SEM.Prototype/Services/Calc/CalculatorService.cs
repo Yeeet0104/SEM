@@ -65,17 +65,6 @@ namespace SEM.Prototype.Services.Calc
                 { "7As", 0.50m },
                 { "8As and above", 1.00m }
             }
-        },
-            {
-            "SPM/O Level", new Dictionary<string, decimal>
-            {
-                { "SPM - 7As", 0.25m },
-                { "8As", 0.50m },
-                { "8A+ / A and above", 1.00m },
-                { "O Level - 6As", 0.25m },
-                { "7As", 0.50m },
-                { "8As and above", 1.00m }
-            }
         }
     };
 
@@ -157,5 +146,9 @@ namespace SEM.Prototype.Services.Calc
 
             return breakdown;
         }
+
+
     }
+
+
 }
