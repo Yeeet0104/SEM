@@ -1,0 +1,86 @@
+﻿@model SEM.Prototype.Models.BookingViewModel
+@{
+    ViewData["Title"] = "Meeting Session Booking";
+}
+
+<h2>Meeting Session Booking</h2>
+
+<div class="alert alert-info">
+    <p>Please note that meeting sessions can only be booked for Saturdays and Sundays.</p>
+    <p>Time: 9am-6pm</p>
+    <p>Place: Block B</p>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        Please correct the errors below and try again.
+    </div>
+}
+
+@Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+<form asp-action="Index" method="post">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="StudentID"></label>
+        <input asp-for="StudentID" class="form-control" />
+        <span asp-validation-for="StudentID" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MeetingDate"></label>
+        <input asp-for="MeetingDate" class="form-control" type="date" />
+        <span asp-validation-for="MeetingDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="MeetingPurpose"></label>
+        <textarea asp-for="MeetingPurpose" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="MeetingPurpose" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Confirm Booking</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(function () {
+            // Set min date to tomorrow
+            var tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            $('#MeetingDate').attr('min', tomorrow.toISOString().split('T')[0]);
+
+            // Disable weekdays
+            $('#MeetingDate').on('input', function () {
+                var day = new Date(this.value).getUTCDay();
+                if ([0, 6].indexOf(day) < 0) {
+                    this.setCustomValidity('Please select a Saturday or Sunday');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        });
+    </script>
+}

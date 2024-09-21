@@ -9,6 +9,7 @@ using SEM.Prototype.Services.Feedback;
 
 using SEM.Prototype.Services;
 using SEM.Prototype.Services.OnlineIDE;
+using SEM.Prototype.Services.Booking;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,7 +25,7 @@ builder.Services.AddTransient<CalculatorService>();
 
 builder.Services.AddTransient<FeedbackService>();
 builder.Services.AddTransient<IFeedbackService, FeedbackService>();
-
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 builder.Services.AddSingleton<CodeExecutionService>();
 
