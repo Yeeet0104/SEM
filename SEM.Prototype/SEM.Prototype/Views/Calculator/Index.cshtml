@@ -3,83 +3,83 @@
 @{
     ViewBag.Title = "Fee Calculator";
 }
+<button type="button" class="btn btn-primary" onclick="toggleCalculator()">Fee Calculator</button>
 
-@if (!Html.ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger">
-        <strong> @Html.ValidationSummary() </strong>
-    </div>
-}
-
-
-<h2>Fee Calculator</h2>
-
-<form asp-action="Calculate" method="post">
-    <div class="form-group">
-        <label for="Programme">Programme</label>
-        <select id="Programme" name="Programme" class="form-control" onchange="updateFields()">
-            <option value="">Select Programme</option>
-            <option value="Foundation">Foundation</option>
-            <option value="Diploma">Diploma</option>
-            <option value="Degree">Degree</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label for="Course">Courses</label>
-        <select id="Course" name="Course" class="form-control">
-            <option value="">Select Course</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label for="EntryCriteria">Entry Criteria</label>
-        <select id="EntryCriteria" name="EntryCriteria" class="form-control">
-            <option value="">Select Entry Criteria</option>
-        </select>
-    </div>
-
-    <div class="form-group" id="ResultField">
-        <label for="Result">Result</label>
-        <select id="Result" name="Result" class="form-control">
-            <option value="">Select Result</option>
-        </select>
-    </div>
-
-    <div class="form-group" id="CgpaField" style="display: none;">
-        <label for="Cgpa">CGPA</label>
-        <input type="number" id="Cgpa" name="Cgpa" class="form-control" step="0.01" placeholder="Enter CGPA" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Calculate Fee</button>
-
-    @if (ViewBag.FeeBreakdown != null)
-    {
-        var breakdown = (FeeBreakdown)ViewBag.FeeBreakdown;
-        <div class="alert alert-info">
-            <h3>Fee Breakdown:</h3>
-            <ul>
-                <li>Base Course Fee: @breakdown.BaseFee.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
-                <li>Registration Fee: @breakdown.RegistrationFee.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
-                <li>Caution Money: @breakdown.CautionMoney.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
-                <li>Insurance Premium: @breakdown.InsurancePremium.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
-                <li>Facilities & Resource Fee: @breakdown.FacilitiesResourceFee.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
-                <li>Laboratory/ Workshop Fee: @breakdown.LabWorkshopFee.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
-                <li>Award Assessment Fee: @breakdown.AwardAssessmentFee.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
-                @if (breakdown.Discount > 0)
-                {
-                    <li>Scholarship Discount: @breakdown.Discount.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</li>
-                }
-                <li><strong>Total Fee: @breakdown.TotalFee.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ms-MY"))</strong></li>
-            </ul>
+<div id="calculatorForm" style="display: none;">
+    <h5>Fee Calculator</h5>
+    <form asp-action="Calculate" method="post" id="feeCalculatorForm">
+        <div class="form-group">
+            <label for="Programme">Programme</label>
+            <select id="Programme" name="Programme" class="form-control" onchange="updateFields()">
+                <option value="">Select Programme</option>
+                <option value="Foundation">Foundation</option>
+                <option value="Diploma">Diploma</option>
+                <option value="Degree">Degree</option>
+            </select>
         </div>
-    }
+
+        <div class="form-group">
+            <label for="Course">Courses</label>
+            <select id="Course" name="Course" class="form-control">
+                <option value="">Select Course</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="EntryCriteria">Entry Criteria</label>
+            <select id="EntryCriteria" name="EntryCriteria" class="form-control">
+                <option value="">Select Entry Criteria</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="ResultField">
+            <label for="Result">Result</label>
+            <select id="Result" name="Result" class="form-control">
+                <option value="">Select Result</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="CgpaField" style="display: none;">
+            <label for="Cgpa">CGPA</label>
+            <input type="number" id="Cgpa" name="Cgpa" class="form-control" step="0.01" placeholder="Enter CGPA" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Calculate Fee</button>
+    </form>
+    <div id="feeBreakdown"></div>
+</div>
+
+<div id="courseComparison">
+    <h5>Course Comparison</h5>
+    <form id="comparisonForm">
+        <div class="form-group">
+            <label>Select Courses to Compare:</label><br />
+            <div id="courseCheckboxes">
+                <input type="checkbox" id="diplomaCS" name="courses" value="Diploma in Computer Science" onchange="updateComparisonDetails()" />
+                <label for="diplomaCS">Diploma in Computer Science</label><br />
+
+                <input type="checkbox" id="diplomaIT" name="courses" value="Diploma in Information Technology" onchange="updateComparisonDetails()" />
+                <label for="diplomaIT">Diploma in Information Technology</label><br />
+
+                <input type="checkbox" id="diplomaSF" name="courses" value="Diploma in Software Engineering" onchange="updateComparisonDetails()" />
+                <label for="diplomaSE">Diploma in Software Engineering</label><br />
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="compareCourses()">Compare</button>
+    </form>
+    <div id="comparisonResult"></div>
+</div>
 
 
-</form>
+
 
 @section Scripts {
     <script>
+        function toggleCalculator() {
+            var form = document.getElementById("calculatorForm");
+            form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+        }
+
         function updateFields() {
             var programme = document.getElementById("Programme").value;
             var coursesSelect = document.getElementById("Course");
@@ -303,6 +303,123 @@
 
         // Attach event listeners
         document.getElementById("EntryCriteria").addEventListener("change", updateResults);
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var form = document.getElementById('feeCalculatorForm');
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                // Validation: Check if all fields are selected
+                var programme = document.getElementById("Programme").value;
+                var course = document.getElementById("Course").value;
+                var entryCriteria = document.getElementById("EntryCriteria").value;
+                var result = document.getElementById("Result").value;
+                var cgpa = document.getElementById("Cgpa").value;
+
+                if (!programme || !course || !entryCriteria || !result || (programme === "Degree" && entryCriteria === "TARUMT Diploma / TARUMT Foundation / Matriculation" && !cgpa)) {
+                    document.getElementById('feeBreakdown').innerHTML = '<div class="alert alert-danger">Please ensure all fields are selected.</div>';
+                    return; // Stop submission if validation fails
+                }
+
+                var formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            var breakdownHtml = `
+                            <div class="alert alert-info">
+                                <h3>Fee Breakdown for ${data.courseName}: </h3>
+                                <ul>
+                                    <li>Base Course Fee: ${data.baseFee}</li>
+                                    <li>Registration Fee (One Time Payment): ${data.registrationFee}</li>
+                                    <li>Caution Money (One Time Payment): ${data.cautionMoney}</li>
+                                    <li>Insurance Premium (Per Year): RM10.00</li>
+                                    <li>Facilities & Resource Fee (Per Year): RM200.00</li>
+                                    <li>Laboratory/ Workshop Fee (Per Year): RM500.00</li>
+                                    <li>Award Assessment Fee (Per Year): RM100.00</li>
+                                    <li>Scholarship Discount (Base Course Fee): ${data.discount}</li>
+                                    <li><strong>Total Fee For Two Years Duration: ${data.totalFee}</strong></li>
+                                </ul>
+                                <h5>You are eligible for a scholarship of ${data.discountPercentage}% off</h5>
+                            </div>`;
+                            document.getElementById('feeBreakdown').innerHTML = breakdownHtml;
+                        } 
+                        document.getElementById('calculatorForm').style.display = 'block';
+                    })                    
+            });
+        });
+
+        function updateComparisonDetails() {
+            const checkboxes = document.querySelectorAll('input[name="courses"]:checked');
+
+            if (checkboxes.length > 3) {
+                alert('You can select a maximum of 3 courses.');
+                checkboxes[checkboxes.length - 1].checked = false; // Uncheck the last checked box
+            }
+        }
+
+        function compareCourses() {
+            const selectedCourses = Array.from(document.querySelectorAll('input[name="courses"]:checked')).map(checkbox => checkbox.value);
+
+            if (selectedCourses.length === 0) {
+                alert('Please select at least one course to compare.');
+                return;
+            }
+
+            // Make AJAX call to get program data
+            fetch('/Calculator/GetProgramData', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(selectedCourses)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    displayComparisonResults(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function displayComparisonResults(data) {
+            const comparisonResultDiv = document.getElementById('comparisonResult');
+            comparisonResultDiv.innerHTML = ''; // Clear previous results
+
+            if (Object.keys(data).length === 0) {
+                comparisonResultDiv.innerHTML = '<p>No courses found for comparison.</p>';
+                return;
+            }
+
+            // Generate comparison result HTML
+            const resultHTML = `<div class="comparison-container">
+            ${Object.keys(data).map(courseName => {
+                const course = data[courseName]; // Access course details
+                return `<div class="course">
+                            <p class="course-overview"><strong>Overview:</strong> ${course.Overview}</p>
+                                    <p class="course-campuses"><strong>Campuses: </strong>${course.Campuses.join(', ')}</p>
+                                    <p class="course-intake"><strong>Intake: </strong>${course.Intake}</p>
+                                    <p class="course-entry-requirements"><strong>Minimum Entry Requirements:</strong> <img src="/Images/${course.MinimumEntryRequirements}" alt="Entry Requirements" /></p>
+                                    <p class="course-academic-progression"><strong>Academic Progression: </strong>${course.AcademicProgression.join(', ')}</p>
+                                    <p class="course-career-prospects"><strong>Career Prospects: </strong>${course.CareerProspects.join(', ')}</p>
+                                    <p class="course-fees"><strong>Fees: </strong>${course.Fee}</p>
+                </div>`;
+            }).join('')}
+        </div>`;
+
+
+            comparisonResultDiv.innerHTML = resultHTML;
+        }
+
     </script>
 }
 

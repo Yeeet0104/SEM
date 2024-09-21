@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SEM.Prototype.Models;
 using SEM.Prototype.Services.Calc;
+using System.Globalization ;
 
 namespace SEM.Prototype.Controllers
 {
@@ -25,14 +26,27 @@ namespace SEM.Prototype.Controllers
             {
                 try
                 {
-                    // Calculate the total fees
                     FeeBreakdown breakdown = _calculatorService.CalculateTotalFees(model);
-                    ViewBag.FeeBreakdown = breakdown; // Pass the breakdown to the view
+
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        // For AJAX requests, return JSON
+                        return Json(new
+                        {
+                            success = true,
+                            courseName = model.Course,
+                            baseFee = breakdown.BaseFee.ToString("C", CultureInfo.GetCultureInfo("ms-MY")),
+                            registrationFee = breakdown.RegistrationFee.ToString("C", CultureInfo.GetCultureInfo("ms-MY")),
+                            cautionMoney = breakdown.CautionMoney.ToString("C", CultureInfo.GetCultureInfo("ms-MY")),
+                            discount = breakdown.Discount.ToString("C", CultureInfo.GetCultureInfo("ms-MY")),
+                            totalFee = breakdown.TotalFee.ToString("C", CultureInfo.GetCultureInfo("ms-MY")),
+                            discountPercentage = ((breakdown.Discount / breakdown.BaseFee) * 100).ToString("F0")
+                        });
+                    }
+
+                    ViewBag.FeeBreakdown = breakdown;
+                    ViewBag.CourseName = model.Course;
                     return View("Index", model);
-                }
-                catch (ArgumentOutOfRangeException ex)
-                {
-                    ModelState.AddModelError(nameof(model.CGPA), ex.Message);
                 }
                 catch (Exception ex)
                 {
@@ -40,9 +54,29 @@ namespace SEM.Prototype.Controllers
                 }
             }
 
-            return View("Index", model); // Return to Index view with model
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
+            }
+
+            return View("Index", model);
         }
 
+        [HttpPost]
+        public IActionResult GetProgramData([FromBody] List<string> courseNames)
+        {
+            try
+            {
+                var programs = ComparatorService.GetCoursesForComparison(courseNames);
+                return Json(programs);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception details
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, new { error = "An internal server error occurred." });
+            }
+        }
 
     }
 }
