@@ -4,7 +4,12 @@ using SEM.Prototype.Models;
 using SEM.Prototype.Services.Chatbot;
 using System;
 using SEM.Prototype.Services.Calc;
+
 using SEM.Prototype.Services.Feedback;
+
+using SEM.Prototype.Services;
+using SEM.Prototype.Services.OnlineIDE;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +21,12 @@ builder.Services.AddSingleton<IChatbotService, ChatbotService>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=app.db"));
 builder.Services.AddTransient<CalculatorService>();
+
 builder.Services.AddTransient<FeedbackService>();
 builder.Services.AddTransient<IFeedbackService, FeedbackService>();
+
+
+builder.Services.AddSingleton<CodeExecutionService>();
 
 
 
