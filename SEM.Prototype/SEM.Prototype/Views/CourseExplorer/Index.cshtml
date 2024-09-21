@@ -1,0 +1,86 @@
+﻿@model SEM.Prototype.Models.CourseExplorerViewModel
+@{
+    ViewData["Title"] = "FOCS Course Explorer";
+}
+
+<div class="p-4">
+    <h2 class="text-2xl font-bold mb-4">FOCS Course Explorer</h2>
+
+    <!-- Search Form -->
+    <form asp-action="Filter" method="post">
+        <input type="text" name="searchTerm" placeholder="Search courses..." value="@Model.SearchTerm" class="mb-4 p-2 border rounded" />
+        <input type="hidden" name="activeTab" value="@Model.ActiveTab" />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <ul class="nav nav-tabs">
+            @foreach (var level in new[] { "Foundation", "Diploma", "Degree", "Postgraduate" })
+            {
+                <li class="nav-item">
+                    <a class="nav-link @(Model.ActiveTab == level ? "active" : "")" href="@Url.Action("Index", new { activeTab = level })">
+                        @level
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+
+    <!-- Course List and Details -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="course-list">
+            <div class="card">
+                <div class="card-header">
+                    <h3>@Model.ActiveTab Courses</h3>
+                </div>
+                <div class="card-body">
+                    @foreach (var course in Model.Courses)
+                    {
+                        <form method="post" asp-action="SelectCourse">
+                            <input type="hidden" name="courseId" value="@course.Id" />
+                            <input type="hidden" name="activeTab" value="@Model.ActiveTab" />
+                            <button type="submit" class="btn btn-block btn-secondary mb-2">@course.Name</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Selected Course Details -->
+        @if (Model.SelectedCourse != null)
+        {
+            <div class="course-details">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>@Model.SelectedCourse.Name</h3>
+                    </div>
+                    <div class="card-body">
+                        <h4>Prerequisites:</h4>
+                        <ul>
+                            @if (Model.SelectedCourse.Prerequisites.Any())
+                            {
+                                @foreach (var prereq in Model.SelectedCourse.Prerequisites)
+                                {
+                                    <li>@prereq</li>
+                                }
+                            }
+                            else
+                            {
+                                <li>No prerequisites</li>
+                            }
+                        </ul>
+
+                        <h4>Potential Careers:</h4>
+                        <ul>
+                            @foreach (var career in Model.SelectedCourse.Careers)
+                            {
+                                <li>@career</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
