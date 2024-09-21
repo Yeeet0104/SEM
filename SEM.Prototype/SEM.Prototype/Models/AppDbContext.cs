@@ -1,11 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace SEM.Prototype.Models
 {
-    public class AppDbContext : DbContext
+    // Extend IdentityDbContext to include Identity functionality
+    public class AppDbContext : IdentityDbContext<IdentityUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<EventModel> Events { get; set; }  // Your DbSet for EventModel
+        // Keep your DbSet for EventModel or any other models
+
+        public DbSet<EventModel> Events { get; set; }
+
+        public DbSet<Staff> Staffs { get; set; }
+        public DbSet<AvailableStaff> AvailableStaffs { get; set; }  // This is missing in your context
+        public DbSet<AvailableSlot> AvailableSlots { get; set; }
+        public DbSet<BookedAppointment> BookedAppointments { get; set; }
+        public DbSet<UserAppointment> UserAppointments { get; set; }
     }
 }

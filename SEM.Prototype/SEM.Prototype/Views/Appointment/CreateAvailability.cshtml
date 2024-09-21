@@ -1,0 +1,70 @@
+﻿@model AvailableStaff
+
+<h2>Create Staff Availability</h2>
+
+<form asp-action="CreateAvailability" method="post">
+    <div class="form-group">
+        <label asp-for="Staff.StaffName"></label>
+        <input asp-for="Staff.StaffName" class="form-control" />
+        <span asp-validation-for="Staff.StaffName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Staff.GoogleMeetLink">Google Meet Link</label>
+        <input asp-for="Staff.GoogleMeetLink" class="form-control" />
+        <span asp-validation-for="Staff.GoogleMeetLink" class="text-danger"></span>
+    </div>
+    <div id="availableSlots">
+        @for (int i = 0; i < Model.AvailableSlots.Count; i++)
+        {
+            <div class="form-group">
+                <label asp-for="@Model.AvailableSlots[i].DayOfWeek">Available Day</label>
+                <select asp-for="@Model.AvailableSlots[i].DayOfWeek" class="form-control">
+                    @foreach (var day in Enum.GetValues(typeof(DayOfWeek)))
+                    {
+                        <option value="@day">@day</option>
+                    }
+                </select>
+
+                <label asp-for="@Model.AvailableSlots[i].StartTime">Start Time</label>
+                <input asp-for="@Model.AvailableSlots[i].StartTime" type="time" class="form-control" />
+
+                <label asp-for="@Model.AvailableSlots[i].EndTime">End Time</label>
+                <input asp-for="@Model.AvailableSlots[i].EndTime" type="time" class="form-control" />
+            </div>
+        }
+    </div>
+
+    <button type="button" id="add-slot" class="btn btn-secondary">Add Slot</button>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var slotIndex = @Model.AvailableSlots.Count;
+
+            $('#add-slot').click(function () {
+                var newSlot = `
+                            <div class="form-group">
+                                <label>Available Day</label>
+                                <select name="AvailableSlots[` + slotIndex + `].DayOfWeek" class="form-control">
+        @foreach (var day in Enum.GetValues(typeof(DayOfWeek)))
+        {
+                                        <option value="@day">@day</option>
+        }
+                                </select>
+
+                                <label>Start Time</label>
+                                <input type="time" name="AvailableSlots[` + slotIndex + `].StartTime" class="form-control" />
+
+                                <label>End Time</label>
+                                <input type="time" name="AvailableSlots[` + slotIndex + `].EndTime" class="form-control" />
+                            </div>
+                        `;
+
+                $('#availableSlots').append(newSlot);
+                slotIndex++;
+            });
+        });
+    </script>
+}
