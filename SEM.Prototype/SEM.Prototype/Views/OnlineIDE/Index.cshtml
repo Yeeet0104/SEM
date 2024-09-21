@@ -111,6 +111,7 @@
                             document.getElementById('challengeDescription').innerHTML = `
                                         <h4>${challenge.title}</h4>
                                         <p>${challenge.description}</p>
+                                        <p>Expected Output: ${challenge.expectedOutput}</p>
                                         <p>Difficulty: ${challenge.difficulty}</p>
                                     `;
                             editor.setValue(challenge.initialCode);

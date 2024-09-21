@@ -7,7 +7,6 @@
         public string Description { get; set; }
         public string InitialCode { get; set; }
         public string ExpectedOutput { get; set; }
-        public string[] TestCases { get; set; }
         public string Difficulty { get; set; }
     }
 }
