@@ -18,6 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=app.db"));
 builder.Services.AddTransient<CalculatorService>();
 builder.Services.AddSingleton<CodeExecutionService>();
+builder.Services.AddScoped<ChallengeService>();
 
 
 var app = builder.Build();

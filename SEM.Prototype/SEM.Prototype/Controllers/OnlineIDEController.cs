@@ -10,15 +10,25 @@ namespace SEM.Prototype.Controllers
     public class OnlineIDEController : Controller
     {
         private readonly CodeExecutionService _codeExecutionService;
+        private readonly ChallengeService _challengeService;
 
-        public OnlineIDEController(CodeExecutionService codeExecutionService)
+        public OnlineIDEController(CodeExecutionService codeExecutionService, ChallengeService challengeService)
         {
             _codeExecutionService = codeExecutionService;
+            _challengeService = challengeService;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var challenges = _challengeService.GetAllChallenges();
+            return View(challenges);
+        }
+
+        [HttpGet]
+        public IActionResult GetChallenge(int id)
+        {
+            var challenge = _challengeService.GetChallenge(id);
+            return Json(challenge);
         }
 
         [HttpPost]
@@ -26,15 +36,58 @@ namespace SEM.Prototype.Controllers
         {
             try
             {
-                // Inject the inputs into the code by replacing input() calls
                 string codeWithInputs = InjectInputsIntoCode(request.Code, request.Inputs);
                 var output = await _codeExecutionService.ExecuteCodeAsync(codeWithInputs, request.Language);
-                return Json(new { success = true, output = output });
+
+                // Clean the output
+                var cleanedOutput = CleanOutput(output);
+
+                bool isCorrect = false;
+                string feedback = "";
+                if (request.ChallengeId.HasValue)
+                {
+                    var challenge = _challengeService.GetChallenge(request.ChallengeId.Value);
+                    if (challenge != null)
+                    {
+                        isCorrect = CompareOutputs(cleanedOutput, challenge.ExpectedOutput);
+                        feedback = isCorrect
+                            ? "Congratulations! Your solution is correct."
+                            : "Your solution doesn't match the expected output. Keep trying!";
+                    }
+                }
+
+                return Json(new { success = true, output = cleanedOutput, isCorrect = isCorrect, feedback = feedback });
             }
             catch (Exception ex)
             {
                 return Json(new { success = false, output = $"An error occurred: {ex.Message}" });
             }
+        }
+
+        private string CleanOutput(string output)
+        {
+            var lines = output.Split('\n');
+
+            var cleanLines = lines.Select(line =>
+            {
+                // Use regex to remove leading non-printable characters
+                string cleanedLine = System.Text.RegularExpressions.Regex.Replace(line, @"^[\s\x00-\x1F\x7F-\x9F]+", "");
+                return cleanedLine.Trim();
+            });
+
+            return string.Join("\n", cleanLines);
+        }
+
+
+
+        private bool CompareOutputs(string actualOutput, string expectedOutput)
+        {
+            // Normalize both outputs by trimming whitespace and comparing
+            return string.Equals(
+                actualOutput.Trim().Replace("\r\n", "\n"),
+                expectedOutput.Trim().Replace("\r\n", "\n"),
+                StringComparison.OrdinalIgnoreCase
+            );
         }
 
         // Helper method to replace input() calls with provided inputs
@@ -67,6 +120,7 @@ namespace SEM.Prototype.Controllers
         public string Code { get; set; }
         public string[] Inputs { get; set; }
         public string Language { get; set; }
+        public int? ChallengeId { get; set; }
     }
 
 }
