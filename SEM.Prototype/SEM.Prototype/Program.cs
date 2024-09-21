@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SEM.Prototype.Hubs;
 using SEM.Prototype.Models;
@@ -31,6 +32,12 @@ builder.Services.AddSingleton<CodeExecutionService>();
 
 
 
+// Adding Identity for user authentication
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+
+
+    .AddDefaultTokenProviders();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -45,7 +52,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();  // This enables Identity authentication
 app.UseAuthorization();
 
 app.MapControllerRoute(

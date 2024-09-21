@@ -13,7 +13,7 @@
 
 2. Download `ollama3.1` (llm) & `all-minilm` (embedding)
 
-   - > **Note** : 
+   - > **Note :** 
      >
      > - You may want to change the path to save the model, simply open Environment Variable, add new user variables `OLLAMA_MODELS`, and put the path in Value
      > - Also make sure the ollama server is running, else ollama cmd will not work
@@ -24,7 +24,7 @@
 
 3. Now you can run the program, try out the chatbot (should contain a button to navigate to the page)
 
-   > **NOTE : ** 
+   > **NOTE :** 
    >
    > - Checkout the **terminal** for the status, if you are not interested in the code.
    > - First time run might be slower, because it will load model from disk
@@ -35,22 +35,17 @@
 
 
 
-## Instruction for database ( SQL LITE) 
+### Instruction for database ( SQL LITE) 
 1. go console type these
-
-dotnet tool install --global dotnet-ef
-
-dotnet ef migrations add InitialCreate
-
-dotnet ef database update
-
-dotnet ef migrations add AddIdentityToAppDbContext
-
-dotnet ef database update
+   - `dotnet tool install --global dotnet-ef`
+   - `dotnet ef database update`
 
 
-## Instruction for Online IDE
+### Instruction for Online IDE
 1. Install this NuGet Packages for docker
    > - Install-Package Docker.DotNet
+
 2. Install the [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
+
 3. Go on the tray, find whale icon right click and make sure to switch it to linux container. If you are already seeing switch to linux container, then its fine.
+4.  run docker pull python:3.9-slim
