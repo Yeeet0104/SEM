@@ -1,18 +1,27 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+
+<!-- Display Success Message if it exists -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success text-center">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
 <!-- Header Section -->
-<header class="bg-info text-white text-center py-5">
+<header class="bg-info text-white py-5 text-center">
     <div class="container">
         <h1>Faculty of Computing and Information Technology</h1>
         <p>Shaping the Future of Technology</p>
     </div>
 </header>
 <!-- Faculty Highlights Section -->
-<section class="container my-5 text-center">
+<section class="my-5 container text-center">
     <h2>FOCS at a Glance</h2>
     <hr class="mx-auto" style="width: 50px; border-top: 3px solid black;">
-    <div class="row text-center mt-4">
+    <div class="row mt-4 text-center">
         <div class="col-md-2">
             <h3>1972</h3>
             <p>FOUNDED</p>
@@ -38,7 +47,7 @@
             <p>MDEC PDTI RECOGNITION</p>
         </div>
     </div>
-    <div class="row text-center mt-4">
+    <div class="row mt-4 text-center">
         <div class="col-md-3 offset-md-3">
             <h3>10</h3>
             <p>PROGRAMMES</p>
@@ -73,7 +82,7 @@
 </section>
 
 <!-- Partners Section -->
-<section class="container my-5">
+<section class="my-5 container">
     <h2 class="text-center">Partners</h2>
     <div class="row text-center">
         <div class="col-md-3">
@@ -135,8 +144,13 @@
             </a>
         </div>
         <div class="mt-2">
+
+            <a asp-controller="Feedback" asp-action="Index" class="btn btn-light border-dark" role="button">
+                Feedback Form
+
             <a asp-controller="OnlineIDE" asp-action="Index" class="btn btn-light border-dark" role="button">
                 OnlineIDE
+
             </a>
         </div>
     </div>
