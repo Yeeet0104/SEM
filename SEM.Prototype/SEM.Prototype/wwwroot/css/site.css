@@ -1,22 +1,78 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+}
+
+.comparison-container {
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.course {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    padding: 15px;
+    box-sizing: border-box;
+    min-width: 300px;
+}
+
+    .course > * {
+        flex: 0 0 auto;
+        margin-bottom: 15px;
+    }
+
+    .course p {
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+.course-overview {
+    height: 380px;
+}
+
+.course-campuses {
+    height: 120px;
+}
+
+.course-intake {
+    height: 40px;
+}
+
+.course-entry-requirements {
+    height: 400px;
+}
+
+.course-academic-progression {
+    height: 300px;
+}
+
+.course-career-prospects {
+    height: 130px;
+}
+
+
+.course-entry-requirements img {
+    max-width: 100%;
+    height: auto;
 }
