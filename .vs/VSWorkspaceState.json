@@ -1,16 +1,7 @@
 {
   "ExpandedNodes": [
-    "",
-    "\\SEM.Prototype",
-    "\\SEM.Prototype\\SEM.Prototype",
-    "\\SEM.Prototype\\SEM.Prototype\\Controllers",
-    "\\SEM.Prototype\\SEM.Prototype\\Hubs",
-    "\\SEM.Prototype\\SEM.Prototype\\Properties",
-    "\\SEM.Prototype\\SEM.Prototype\\Services",
-    "\\SEM.Prototype\\SEM.Prototype\\Services\\Chatbot",
-    "\\SEM.Prototype\\SEM.Prototype\\Utils",
-    "\\SEM.Prototype\\SEM.Prototype\\Views"
+    ""
   ],
-  "SelectedNode": "\\SEM.Prototype\\SEM.Prototype.sln",
+  "SelectedNode": "\\SEM.Prototype.sln",
   "PreviewInSolutionExplorer": false
 }
