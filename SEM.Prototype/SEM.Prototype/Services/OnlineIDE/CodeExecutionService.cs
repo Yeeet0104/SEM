@@ -94,6 +94,7 @@ namespace SEM.Prototype.Services.OnlineIDE
             return response.ID;
         }
 
+        //used for monitoring the container logs or execution progress
         private async Task<string> GetContainerLogsAsync(string containerId, CancellationToken cancellationToken)
         {
             var logStream = await _dockerClient.Containers.GetContainerLogsAsync(
@@ -106,6 +107,7 @@ namespace SEM.Prototype.Services.OnlineIDE
             return await reader.ReadToEndAsync();
         }
 
+        //stop and remove container save memory
         private async Task CleanupContainerAsync(string containerId, CancellationToken cancellationToken)
         {
             await _dockerClient.Containers.StopContainerAsync(
