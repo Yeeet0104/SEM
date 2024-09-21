@@ -28,6 +28,7 @@ builder.Services.AddTransient<IFeedbackService, FeedbackService>();
 
 
 builder.Services.AddSingleton<CodeExecutionService>();
+builder.Services.AddScoped<ChallengeService>();
 
 
 
