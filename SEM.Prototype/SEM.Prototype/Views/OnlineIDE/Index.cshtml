@@ -27,7 +27,11 @@
 
             document.getElementById('runButton').addEventListener('click', function () {
                 var code = editor.getValue();
-                document.getElementById('output').innerText = 'Running code...';
+                var outputElement = document.getElementById('output');
+                outputElement.innerText = 'Running code...';
+
+                console.log('Sending code to server:', code);
+
                 fetch('/OnlineIDE/RunCode', {
                     method: 'POST',
                     headers: {
@@ -37,15 +41,25 @@
                 })
                     .then(response => response.json())
                     .then(data => {
+                        console.log('Received data:', data);
                         if (data.success) {
-                            document.getElementById('output').innerText = data.output;
+                            console.log('Raw output:', data.output);
+                            // Clean up the output
+                            var cleanOutput = data.output.replace(/^\s*[\u0000-\u001F\u007F-\u009F]+/, '').trim();
+                            console.log('Clean output:', cleanOutput);
+                            // Convert whitespace to visible characters (optional)
+                            var visibleOutput = cleanOutput.replace(/\n/g, '↵\n').replace(/ /g, '·');
+                            console.log('Visible output:', visibleOutput);
+                            outputElement.innerText = cleanOutput; // or visibleOutput if you want to keep whitespace visible
                         } else {
-                            document.getElementById('output').innerText = 'Error: ' + data.output;
+                            console.log('Error output:', data.output);
+                            outputElement.innerText = 'Error: ' + data.output;
                         }
+                        console.log('Output element text:', outputElement.innerText);
                     })
                     .catch((error) => {
                         console.error('Error:', error);
-                        document.getElementById('output').innerText = 'An error occurred while running the code.';
+                        outputElement.innerText = 'An error occurred while running the code.';
                     });
             });
         });
