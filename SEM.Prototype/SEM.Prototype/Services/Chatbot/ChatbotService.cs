@@ -35,8 +35,8 @@ namespace SEM.Prototype.Services.Chatbot
                 }
             });
 
-            _embeddingModel = new OllamaEmbeddingModel(provider, id: "all-minilm");
-            //_embeddingModel = new OllamaEmbeddingModel(provider, id: "nomic-embed-text");
+            //_embeddingModel = new OllamaEmbeddingModel(provider, id: "all-minilm");
+            _embeddingModel = new OllamaEmbeddingModel(provider, id: "nomic-embed-text");
             //_embeddingModel = new OllamaEmbeddingModel(provider, id: "mxbai-embed-large")
 
             _chatModel = new OllamaChatModel(provider, id: "llama3.1");
@@ -66,7 +66,7 @@ AI: ";
 
             Console.WriteLine("Chatting with the AI...");
             Console.WriteLine("Attempt to Getting vector collection...");
-            var vectorCollection = await _vectorDatabase.GetOrCreateCollectionAsync("focs_clean", dimensions: 384);
+            var vectorCollection = await _vectorDatabase.GetOrCreateCollectionAsync("focs_clean", dimensions: 768);
 
             if (vectorCollection.IsEmptyAsync().Result)
             {

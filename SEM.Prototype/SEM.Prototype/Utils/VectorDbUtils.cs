@@ -22,7 +22,7 @@ namespace SEM.Prototype.Utils
 
             // Should be 1536 for TextEmbeddingV3SmallModel
             // dimensions: 384, //for all-MiniLM- 384 dimensions
-            var vectorCollection = await vectorDatabase.GetOrCreateCollectionAsync("focs", dimensions: 384);
+            var vectorCollection = await vectorDatabase.GetOrCreateCollectionAsync("focs", dimensions: 768);
 
             // Define the list of URLs
             var urls = new List<string>
@@ -63,11 +63,17 @@ namespace SEM.Prototype.Utils
             Console.WriteLine("Complete Download...");
         }
 
+        /// <summary>
+        /// Load the clean text files to the vector database in <b>parallel</b>. <br />
+        /// </summary>
+        /// <param name="vectorDatabase"></param>
+        /// <param name="embeddingModel"></param>
+        /// <returns></returns>
         public static async Task LoadTextFilesToVectorDB(IVectorDatabase vectorDatabase, IEmbeddingModel embeddingModel)
         {
             Console.WriteLine("Loading Clean documents to vector db...");
 
-            var vectorCollection = await vectorDatabase.GetOrCreateCollectionAsync("focs_clean", dimensions: 384);
+            var vectorCollection = await vectorDatabase.GetOrCreateCollectionAsync("focs_clean", dimensions: 768);
 
             // get FOCS under Assets folder path
             string assetsPath = Path.GetFullPath("Assets/FOCS");
