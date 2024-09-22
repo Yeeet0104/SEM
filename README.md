@@ -48,4 +48,4 @@
 2. Install the [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
 
 3. Go on the taskbar(maybe its in hidden icon section), find whale icon right click and make sure to switch it to linux container. If you are already seeing switch to linux container, then its fine.
-4.  run docker pull python:3.9-slim
+4.  run  - docker pull python:3.9-slim
