@@ -9,8 +9,6 @@ namespace SEM.Prototype.Models
 
         [Required]
         public string StaffName { get; set; }
-
-        public string GoogleMeetLink { get; set; }  // New field to store the Google Meet link
     }
 
 

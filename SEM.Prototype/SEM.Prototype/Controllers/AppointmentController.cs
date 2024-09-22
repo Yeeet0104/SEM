@@ -1,10 +1,12 @@
 ﻿using Aspose.Pdf.Annotations;
+using Google.Apis.Calendar.v3.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SEM.Prototype.Models;
+using SEM.Prototype.Services.GoogleMeet;
 using System.Security.Claims;
 
 namespace SEM.Prototype.Controllers
@@ -87,13 +89,25 @@ namespace SEM.Prototype.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult CreateAvailability(AvailableStaff availableStaff)
         {
+            if (!ModelState.IsValid)
+            {
+                // Log validation errors to the console
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                foreach (var error in errors)
+                {
+                    Console.WriteLine("ModelState Error: " + error);
+                }
+
+                // Optionally, add a breakpoint here to inspect the ModelState in detail
+                return View(availableStaff);  // Return to the view to display validation messages
+            }
             if (ModelState.IsValid)
             {
-                // First, save the Staff details
+
+
                 var staff = new Staff
                 {
                     StaffName = availableStaff.Staff.StaffName,
-                    GoogleMeetLink = availableStaff.Staff.GoogleMeetLink  // Save the Google Meet link
                 };
                 _context.Add(staff);
                 _context.SaveChanges();
@@ -136,7 +150,7 @@ namespace SEM.Prototype.Controllers
         }
 
         [HttpPost]
-        public IActionResult BookAppointment(string userId, int staffId, DateTime appointmentDateTime, string gMeetLink)
+        public IActionResult BookAppointment(string userId, int staffId, DateTime appointmentDateTime)
         {
             // Find the user’s booked appointments or create a new one
             var staff = _context.Staffs.FirstOrDefault(s => s.Id == staffId);
@@ -157,13 +171,15 @@ namespace SEM.Prototype.Controllers
                 };
                 _context.BookedAppointments.Add(bookedAppointment);
             }
+            // Generate the Google Meet link at the time of booking
+            string gMeetLink = CreateGoogleMeetLink(staff.StaffName, appointmentDateTime);
 
             // Create the user appointment
             var userAppointment = new UserAppointment
             {
                 StaffId = staffId,
                 AppointmentDateTime = appointmentDateTime,
-                GMeetLink = staff.GoogleMeetLink
+                GMeetLink = gMeetLink
             };
 
             // Add the appointment to the user's list
@@ -196,7 +212,6 @@ namespace SEM.Prototype.Controllers
                 {
                     // Update Staff Name and Google Meet Link
                     existingStaff.Staff.StaffName = updatedStaff.Staff.StaffName;
-                    existingStaff.Staff.GoogleMeetLink = updatedStaff.Staff.GoogleMeetLink;
 
                     // Clear old available slots and update with new slots
                     existingStaff.AvailableSlots.Clear();
@@ -220,6 +235,45 @@ namespace SEM.Prototype.Controllers
             }
 
             return View(updatedStaff);
+        }
+
+        // Method to generate the Google Meet link
+        private string CreateGoogleMeetLink(string staffName, DateTime appointmentDateTime)
+        {
+            var service = GoogleCalendarService.GetCalendarService();
+
+            var newEvent = new Event()
+            {
+                Summary = $"Appointment with {staffName}",
+                Start = new EventDateTime()
+                {
+                    DateTime = appointmentDateTime,
+                    TimeZone = "America/Los_Angeles",  // Change to your time zone
+                },
+                End = new EventDateTime()
+                {
+                    DateTime = appointmentDateTime.AddHours(1),  // Assume a 1-hour meeting
+                    TimeZone = "America/Los_Angeles",
+                },
+                ConferenceData = new ConferenceData
+                {
+                    CreateRequest = new CreateConferenceRequest
+                    {
+                        RequestId = Guid.NewGuid().ToString(),
+                        ConferenceSolutionKey = new ConferenceSolutionKey
+                        {
+                            Type = "hangoutsMeet"
+                        }
+                    }
+                }
+            };
+
+            var request = service.Events.Insert(newEvent, "primary");
+            request.ConferenceDataVersion = 1;  // Required to enable Google Meet
+            var createdEvent = request.Execute();
+
+            // Return the Google Meet link
+            return createdEvent.HangoutLink;
         }
         // GET: Appointment/Index
         public IActionResult Index()
