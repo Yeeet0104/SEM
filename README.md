@@ -49,4 +49,4 @@
 
 3. Go on docker desktop > settinges (gear icon on top right of the app) > Builder. Make it it shows desktop linux.
 4.  run code in Package Manager Console 
-   - docker pull python:3.9-slim
+   - `docker pull python:3.9-slim`
