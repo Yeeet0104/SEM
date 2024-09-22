@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using SEM.Prototype.Services.Chatbot;
-using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 
 namespace SEM.Prototype.Hubs
@@ -49,6 +48,8 @@ namespace SEM.Prototype.Hubs
 
         public ChannelReader<string> ChatStreamAsync(string message)
         {
+            Console.WriteLine("Chat Received by hubs : " + message);
+
             var channel = Channel.CreateUnbounded<string>();
 
             _ = WriteItemAsync(channel.Writer, message, Context.ConnectionAborted);

@@ -1,0 +1,41 @@
+﻿FOCS Staffs, FOCS Team
+
+Ts. Lim Shen Huoy 
+- Position / Role : Senior Lecturer, Dean 
+- Email :  limsh@tarc.edu.my
+
+Ts. Chok Len Mooi 
+- Position / Role  :  Principal Lecturer, Deputy Dean (Academic) 
+- Email : choklm@tarc.edu.my
+
+Mr. Ooi Chun Pew 
+- Position / Role : Senior Lecturer, Deputy Dean (Academic) 
+- Email : cpooi@tarc.edu.my
+
+Dr. Wong Thein Lai 
+- Position / Role : Associate Professor, Deputy Dean (Research & Development) 
+- Email : wongtl@tarc.edu.my
+
+Pn. Azurawati binti Ismail 
+- Position / Role : Senior Lecturer, Department of Software Engineering and Technology 
+- Email : azurawatii@tarc.edu.my
+
+Mr. Chee Keh Niang 
+- Position / Role : Principal Lecturer, Department of Mathematical and Data Science 
+- Email : cheekn@tarc.edu.my
+
+Ms. Tan Li Peng 
+- Position / Role : Senior Lecturer, Department of Information and Communication Technology 
+- Email : tanlp@tarc.edu.my
+
+Ms. Too Wei Chin 
+- Position / Role : Senior Lecturer, Department of Computer Science and Embedded Systems 
+- Email : toowc@tarc.edu.my
+
+Ms. Kong Hooi Ming 
+- Position / Role : Senior Lecturer, Department of Information Systems and Security 
+- Email : konghm@tarc.edu.my
+
+Ms. Chong Voon Niang 
+- Position / Role : Senior Lecturer, Associate Dean for Quality Assurance Processes 
+- Email : chongvn@tarc.edu.my

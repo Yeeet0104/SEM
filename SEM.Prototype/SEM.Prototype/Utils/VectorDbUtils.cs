@@ -2,6 +2,7 @@
 using LangChain.DocumentLoaders;
 using LangChain.Extensions;
 using LangChain.Providers;
+using Microsoft.Extensions.DependencyModel;
 
 namespace SEM.Prototype.Utils
 {
@@ -14,9 +15,9 @@ namespace SEM.Prototype.Utils
         /// <param name="vectorDatabase"></param>
         /// <param name="embeddingModel"></param>
         /// <returns></returns>
-        public static async Task DownloadDocumentsToVectorDB(IVectorDatabase vectorDatabase, IEmbeddingModel embeddingModel)
+        public static async Task DownloadWebsiteHMTLToVectorDB(IVectorDatabase vectorDatabase, IEmbeddingModel embeddingModel)
         {
-            Console.WriteLine("Downloading documents...");
+            Console.WriteLine("Downloading documents to vector db...");
 
             // Should be 1536 for TextEmbeddingV3SmallModel
             // dimensions: 384, //for all-MiniLM- 384 dimensions
@@ -24,7 +25,7 @@ namespace SEM.Prototype.Utils
 
             // Define the list of URLs
             var urls = new List<string>
-            { 
+            {
                 "https://focs.tarc.edu.my/",
                 "https://focs.tarc.edu.my/about-us",
                 "https://www.tarc.edu.my/mqa/programmes-accreditated-by-mqa/kuala-lumpur-main-campus/faculty-of-computing-and-information-technology/",
@@ -59,6 +60,32 @@ namespace SEM.Prototype.Utils
             await Task.WhenAll(tasks);
 
             Console.WriteLine("Complete Download...");
+        }
+
+        public static async Task LoadTextFilesToVectorDB(IVectorDatabase vectorDatabase, IEmbeddingModel embeddingModel)
+        {
+            Console.WriteLine("Loading Clean documents to vector db...");
+
+            var vectorCollection = await vectorDatabase.GetOrCreateCollectionAsync("focs-clean", dimensions: 384);
+
+            // get FOCS under Assets folder path
+            string assetsPath = Path.Combine(Directory.GetCurrentDirectory(), "../Assets/FOCS");
+
+            //load all text files in the folder
+            var files = Directory.GetFiles(assetsPath, "*.txt");
+
+            // Create tasks for parallel execution
+            var tasks = files.Select(file =>
+                vectorCollection.AddDocumentsFromAsync<FileLoader>(
+                    embeddingModel,
+                    dataSource: DataSource.FromPath(file))
+            ).ToArray();
+
+            // Wait for all tasks to complete
+            await Task.WhenAll(tasks);
+
+            Console.WriteLine("Complete Loading the text files...\n");  
+
         }
     }
 }

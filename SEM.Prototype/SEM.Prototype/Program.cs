@@ -16,8 +16,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSignalR();
+
 //builder.Services.AddSingleton<OllamaProviderLoader>();
 builder.Services.AddSingleton<IChatbotService, ChatbotService>();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=app.db"));
 builder.Services.AddTransient<CalculatorService>();

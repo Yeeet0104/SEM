@@ -26,6 +26,7 @@ namespace SEM.Prototype.Services.OnlineIDE
                 return "Only Python is supported at the moment.";
             }
 
+            Console.WriteLine($"Executing code: {code}");
             try
             {
                 using var cts = new CancellationTokenSource(_timeout);
@@ -38,6 +39,8 @@ namespace SEM.Prototype.Services.OnlineIDE
                 File.WriteAllText(codePath, code);
 
                 var containerId = await CreateAndStartContainerAsync(imageName, tempDir, cts.Token);
+
+                Console.WriteLine($"Container ID: {containerId}");
 
                 var output = await GetContainerLogsAsync(containerId, cts.Token);
 

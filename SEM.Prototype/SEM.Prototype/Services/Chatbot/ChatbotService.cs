@@ -64,23 +64,25 @@ AI: ";
         {
             _chatModel.PartialResponseGenerated += OnResponse;
 
-            var vectorCollection = await _vectorDatabase.GetOrCreateCollectionAsync("focs", dimensions: 384);
+            var vectorCollection = await _vectorDatabase.GetOrCreateCollectionAsync("focs-clean", dimensions: 384);
 
             if (vectorCollection.IsEmptyAsync().Result)
             {
                 Console.WriteLine("Vector Collections for focs is empty....");
-                await VectorDbUtils.DownloadDocumentsToVectorDB(_vectorDatabase, _embeddingModel);
+                //await VectorDbUtils.DownloadWebsiteHMTLToVectorDB(_vectorDatabase, _embeddingModel);
+                await VectorDbUtils.LoadTextFilesToVectorDB(_vectorDatabase, _embeddingModel);
             }
 
-            Console.WriteLine("Getting similar documents...");
+            Console.WriteLine("Getting similar documents from vector db...");
             var lastMessage = _memory.ChatHistory.Messages.LastOrDefault();
-            //var searchInput = (lastMessage.Content ?? " ") + " " + question; // adding the last message to the search input
-            var searchInput =  question;
+            var searchInput = (lastMessage.Content ?? " ") + "\n" + question; // adding the last message to the search input
+            //var searchInput =  question;
             Console.WriteLine("Search Input : " + searchInput);
             var similarDocuments = await vectorCollection.GetSimilarDocuments(
                 _embeddingModel,
                 question,
                 amount: 5);
+            Console.WriteLine("\nSimilar Documents : \n" + similarDocuments.AsString() + "\n");
 
             Console.WriteLine("\nResponding...");
             // Build a new chain by prepending the user's input to the original chain
