@@ -355,7 +355,11 @@
                 var result = document.getElementById("Result").value;
                 var cgpa = document.getElementById("Cgpa").value;
 
-                if (!programme || !course || !entryCriteria || !result || (programme === "Degree" && entryCriteria === "TARUMT Diploma / TARUMT Foundation / Matriculation" && !cgpa)) {
+                // Check if CGPA or Result should be required
+                if (!programme || !course || !entryCriteria ||
+                    (programme === "Degree" && entryCriteria === "TARUMT Diploma / TARUMT Foundation / Matriculation" && !cgpa) ||
+                    (programme === "Degree" && entryCriteria !== "TARUMT Diploma / TARUMT Foundation / Matriculation" && !result) ||
+                    (programme !== "Degree" && !result)) {
                     document.getElementById('feeBreakdown').innerHTML = '<div class="alert alert-danger">Please ensure all fields are selected.</div>';
                     return; // Stop submission if validation fails
                 }
@@ -373,21 +377,21 @@
                     .then(data => {
                         if (data.success) {
                             var breakdownHtml = `
-                                <div class="alert alert-info">
-                                    <h3>Fee Breakdown for ${data.courseName}: </h3>
-                                    <ul>
-                                        <li>Base Course Fee: ${data.baseFee}</li>
-                                        <li>Registration Fee (One Time Payment): ${data.registrationFee}</li>
-                                        <li>Caution Money (One Time Payment): ${data.cautionMoney}</li>
-                                        <li>Insurance Premium (Per Year): RM10.00</li>
-                                        <li>Facilities & Resource Fee (Per Year): RM200.00</li>
-                                        <li>Laboratory/ Workshop Fee (Per Year): RM500.00</li>
-                                        <li>Award Assessment Fee (Per Year): RM100.00</li>
-                                        <li>Scholarship Discount (Base Course Fee): ${data.discount}</li>
-                                        <li><strong>Total Fee For Two Years Duration: ${data.totalFee}</strong></li>
-                                    </ul>
-                                    <h5>You are eligible for a scholarship of ${data.discountPercentage}% off</h5>
-                                </div>`;
+                            <div class="alert alert-info">
+                                <h3>Fee Breakdown for ${data.courseName}: </h3>
+                                <ul>
+                                    <li>Base Course Fee: ${data.baseFee}</li>
+                                    <li>Registration Fee (One Time Payment): ${data.registrationFee}</li>
+                                    <li>Caution Money (One Time Payment): ${data.cautionMoney}</li>
+                                    <li>Insurance Premium (Per Year): RM10.00</li>
+                                    <li>Facilities & Resource Fee (Per Year): RM200.00</li>
+                                    <li>Laboratory/ Workshop Fee (Per Year): RM500.00</li>
+                                    <li>Award Assessment Fee (Per Year): RM100.00</li>
+                                    <li>Scholarship Discount (Base Course Fee): ${data.discount}</li>
+                                    <li><strong>Total Fee For Two Years Duration: ${data.totalFee}</strong></li>
+                                </ul>
+                                <h5>You are eligible for a scholarship of ${data.discountPercentage}% off</h5>
+                            </div>`;
                             document.getElementById('feeBreakdown').innerHTML = breakdownHtml;
 
                             // Show the export button only when the fee calculation is successful
@@ -401,6 +405,7 @@
                     });
             });
         });
+
 
         document.getElementById('exportFeePDF').addEventListener('click', function () {
             html2canvas(document.querySelector('#feeBreakdown')).then(canvas => {
