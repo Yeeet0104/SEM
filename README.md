@@ -42,10 +42,10 @@
 
 
 ### Instruction for Online IDE
-1. Install this NuGet Packages for docker
+1. Install this NuGet Packages for docker in Package Manager Console
    > - Install-Package Docker.DotNet
 
 2. Install the [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
 
-3. Go on the taskbar(maybe its in hidden icon section), find whale icon right click and make sure to switch it to linux container. If you are already seeing switch to linux container, then its fine.
-4.  run  - docker pull python:3.9-slim
+3. Go on docker desktop > settinges (gear icon on top right of the app) > Builder. Make it it shows desktop linux.
+4.  run code in Package Manager Console - docker pull python:3.9-slim
