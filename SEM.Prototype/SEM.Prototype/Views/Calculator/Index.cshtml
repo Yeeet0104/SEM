@@ -1,7 +1,7 @@
 ﻿@model SEM.Prototype.Models.CalculatorViewModel
 
 @{
-    ViewBag.Title = "Fee Calculator";
+    ViewBag.Title = "Course Checker";
 }
 <button type="button" class="btn btn-primary" style="margin-bottom:20px;" onclick="toggleCalculator()">Fee Calculator</button>
 
@@ -466,6 +466,8 @@
             const resultHTML = `<div class="comparison-container">
                     ${Object.keys(data).map(courseName => {
                 const course = data[courseName]; // Access course details
+                const enrollUrl = `https://www.tarc.edu.my/account/login.jsp?fappcode=online-app{encodeURIComponent(courseName)}`; // Replace this with your actual enrollment URL
+
                 return `<div class="course">
                         ${showAllDetails ? `
                             <p class="course-overview"><strong>Overview:</strong> ${course.Overview}</p>
@@ -493,6 +495,12 @@
                                 return `<p class="course-fees"><strong>Fees: </strong>${course.Fee}</p>`;
                             }
                         }).join('')}
+
+                        <!-- Enroll Now Button -->
+                        <div class="enroll-btn-container">
+                            <a href="${enrollUrl}" class="enroll-btn" target="_blank">Enroll Now</a>
+                        </div>
+
                         </div>`;
             }).join('')}
 
@@ -500,8 +508,6 @@
 
             comparisonResultDiv.innerHTML = resultHTML;
         }
-
-
 
         function toggleFilter(filter) {
             const button = document.getElementById(`toggle${filter}`);

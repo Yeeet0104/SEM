@@ -91,3 +91,21 @@ body {
         color: white; /* White text for better contrast */
         border-color: #0056b3; /* Match border with background */
     }
+.enroll-btn-container {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.enroll-btn {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #28a745;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+    .enroll-btn:hover {
+        background-color: #218838;
+    }
