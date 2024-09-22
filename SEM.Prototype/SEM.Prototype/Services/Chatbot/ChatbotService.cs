@@ -44,7 +44,7 @@ namespace SEM.Prototype.Services.Chatbot
             _vectorDatabase = new SqLiteVectorDatabase(dataSource: "vectors.db");
 
             var template = @"
-The following is a friendly and informative conversation between a human and an AI. The AI will respond to the human's queries based on the context provided below. AI will provide short, clear, concise, and friendly responses that align with the university's values and maintain a supportive tone throughout the conversation. This AI is designed to assist students, prospective students, and others by offering accurate and helpful information about the Faculty of Computing and Information Technology (FOCS) at Tunku Abdul Rahman University of Management and Technology (TARUMT), previously known as Tunku Abdul Rahman University College (TARUC).
+The following is a friendly and informative conversation between a human and an AI. Transcript a dialog whare the AI will respond to the human's queries in markdown and strcutured format based on the context provided below. AI will provide short, clear, concise, and friendly responses that align with the university's values and maintain a supportive tone throughout the conversation. This AI is designed to assist students, prospective students, and others by offering accurate and helpful information about the Faculty of Computing and Information Technology (FOCS) at Tunku Abdul Rahman University of Management and Technology (TARUMT), previously known as Tunku Abdul Rahman University College (TARUC).
 
 {context}
 
@@ -64,7 +64,9 @@ AI: ";
         {
             _chatModel.PartialResponseGenerated += OnResponse;
 
-            var vectorCollection = await _vectorDatabase.GetOrCreateCollectionAsync("focs-clean", dimensions: 384);
+            Console.WriteLine("Chatting with the AI...");
+            Console.WriteLine("Attempt to Getting vector collection...");
+            var vectorCollection = await _vectorDatabase.GetOrCreateCollectionAsync("focs_clean", dimensions: 384);
 
             if (vectorCollection.IsEmptyAsync().Result)
             {

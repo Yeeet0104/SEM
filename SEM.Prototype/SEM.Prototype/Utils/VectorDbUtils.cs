@@ -1,4 +1,5 @@
-﻿using LangChain.Databases;
+﻿using Aspose.Pdf.Utils.PublicData;
+using LangChain.Databases;
 using LangChain.DocumentLoaders;
 using LangChain.Extensions;
 using LangChain.Providers;
@@ -66,13 +67,20 @@ namespace SEM.Prototype.Utils
         {
             Console.WriteLine("Loading Clean documents to vector db...");
 
-            var vectorCollection = await vectorDatabase.GetOrCreateCollectionAsync("focs-clean", dimensions: 384);
+            var vectorCollection = await vectorDatabase.GetOrCreateCollectionAsync("focs_clean", dimensions: 384);
 
             // get FOCS under Assets folder path
-            string assetsPath = Path.Combine(Directory.GetCurrentDirectory(), "../Assets/FOCS");
+            string assetsPath = Path.GetFullPath("Assets/FOCS");
+            Console.WriteLine("Assets Path: " + assetsPath);
 
             //load all text files in the folder
             var files = Directory.GetFiles(assetsPath, "*.txt");
+
+            Console.WriteLine("Loading Files: ");
+            foreach (var file in files)
+            {
+                Console.WriteLine("File: " + file);
+            }
 
             // Create tasks for parallel execution
             var tasks = files.Select(file =>
