@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SEM.Prototype.Models;
 
@@ -10,9 +11,11 @@ using SEM.Prototype.Models;
 namespace SEM.Prototype.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240921102847_UpdateStaffAvailability")]
+    partial class UpdateStaffAvailability
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
@@ -209,60 +212,27 @@ namespace SEM.Prototype.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("SEM.Prototype.Models.AvailableSlot", b =>
+            modelBuilder.Entity("SEM.Prototype.Models.Appointment", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("AppointmentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("AvailableStaffId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<TimeSpan>("EndTime")
+                    b.Property<DateTime>("AppointmentTime")
                         .HasColumnType("TEXT");
-
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AvailableStaffId");
-
-                    b.ToTable("AvailableSlots");
-                });
-
-            modelBuilder.Entity("SEM.Prototype.Models.AvailableStaff", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("StaffId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StaffId");
-
-                    b.ToTable("AvailableStaffs");
-                });
-
-            modelBuilder.Entity("SEM.Prototype.Models.BookedAppointment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("AppointmentId");
 
-                    b.ToTable("BookedAppointments");
+                    b.HasIndex("StaffId");
+
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("SEM.Prototype.Models.EventModel", b =>
@@ -292,11 +262,11 @@ namespace SEM.Prototype.Migrations
 
             modelBuilder.Entity("SEM.Prototype.Models.Staff", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("StaffId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("GoogleMeetLink")
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -304,37 +274,36 @@ namespace SEM.Prototype.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("StaffId");
 
-                    b.ToTable("Staffs");
+                    b.ToTable("Staff");
                 });
 
-            modelBuilder.Entity("SEM.Prototype.Models.UserAppointment", b =>
+            modelBuilder.Entity("SEM.Prototype.Models.StaffAvailability", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("StaffId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("AppointmentDateTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("BookedAppointmentId")
+                    b.Property<int>("AvailableDay")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("GMeetLink")
+                    b.Property<TimeSpan>("AvailableEndTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeSpan>("AvailableStartTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("StaffName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("StaffId")
-                        .HasColumnType("INTEGER");
+                    b.HasKey("StaffId");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookedAppointmentId");
-
-                    b.HasIndex("StaffId");
-
-                    b.ToTable("UserAppointments");
+                    b.ToTable("StaffAvailability");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -388,32 +357,10 @@ namespace SEM.Prototype.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SEM.Prototype.Models.AvailableSlot", b =>
-                {
-                    b.HasOne("SEM.Prototype.Models.AvailableStaff", null)
-                        .WithMany("AvailableSlots")
-                        .HasForeignKey("AvailableStaffId");
-                });
-
-            modelBuilder.Entity("SEM.Prototype.Models.AvailableStaff", b =>
+            modelBuilder.Entity("SEM.Prototype.Models.Appointment", b =>
                 {
                     b.HasOne("SEM.Prototype.Models.Staff", "Staff")
-                        .WithMany()
-                        .HasForeignKey("StaffId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Staff");
-                });
-
-            modelBuilder.Entity("SEM.Prototype.Models.UserAppointment", b =>
-                {
-                    b.HasOne("SEM.Prototype.Models.BookedAppointment", null)
                         .WithMany("Appointments")
-                        .HasForeignKey("BookedAppointmentId");
-
-                    b.HasOne("SEM.Prototype.Models.Staff", "Staff")
-                        .WithMany()
                         .HasForeignKey("StaffId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -421,12 +368,7 @@ namespace SEM.Prototype.Migrations
                     b.Navigation("Staff");
                 });
 
-            modelBuilder.Entity("SEM.Prototype.Models.AvailableStaff", b =>
-                {
-                    b.Navigation("AvailableSlots");
-                });
-
-            modelBuilder.Entity("SEM.Prototype.Models.BookedAppointment", b =>
+            modelBuilder.Entity("SEM.Prototype.Models.Staff", b =>
                 {
                     b.Navigation("Appointments");
                 });

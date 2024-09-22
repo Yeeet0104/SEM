@@ -1,23 +1,34 @@
-﻿@{
+﻿@model List<CodingChallenge>
+@{
     ViewData["Title"] = "Online IDE";
 }
 
 <div class="container">
-    <h2>Online IDE</h2>
+    <h2>Online IDE with Challenges</h2>
     <div class="row">
         <div class="col-md-8">
+            <select id="challengeSelect" class="form-control mb-3">
+                <option value="">Select a challenge</option>
+                @foreach (var challenge in Model)
+                {
+                    <option value="@challenge.Id">@challenge.Title</option>
+                }
+            </select>
+            <div id="challengeDescription" class="mb-3"></div>
             <div id="editor" style="height: 400px; border: 1px solid grey;"></div>
         </div>
         <div class="col-md-4">
-            <!-- Input fields for user input -->
             <div id="inputs-container"></div>
             <button id="runButton" class="btn btn-primary mb-3">Run Code</button>
+            <div id="feedback" class="mb-3"></div>
             <div id="output" style="height: 350px; border: 1px solid grey; overflow-y: auto; padding: 10px;"></div>
         </div>
     </div>
 </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
+
     <script>
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' } });
         require(['vs/editor/editor.main'], function () {
@@ -27,70 +38,63 @@
                 theme: 'vs-dark'
             });
 
-            // Function to dynamically add input fields based on the number of input() calls
             function generateInputFields() {
                 var code = editor.getValue();
-                const inputCount = (code.match(/input\(/g) || []).length; // Count occurrences of input()
+                const inputCount = (code.match(/input\(/g) || []).length;
                 const inputsContainer = document.getElementById('inputs-container');
-                inputsContainer.innerHTML = ''; // Clear existing inputs
+                inputsContainer.innerHTML = '';
 
                 for (let i = 0; i < inputCount; i++) {
                     const inputField = document.createElement('input');
                     inputField.setAttribute('class', 'form-control mb-2');
                     inputField.setAttribute('placeholder', `Input ${i + 1}`);
-                    inputField.setAttribute('id', `input${i}`); // Add unique ID for each input
+                    inputField.setAttribute('id', `input${i}`);
                     inputsContainer.appendChild(inputField);
                 }
             }
 
-            // Add event listener for editor changes
-            editor.onDidChangeModelContent(() => {
-                generateInputFields(); // Update input fields when the code is changed
-            });
+            editor.onDidChangeModelContent(generateInputFields);
 
-            // Run code when the button is clicked
             document.getElementById('runButton').addEventListener('click', function () {
                 var code = editor.getValue();
                 var outputElement = document.getElementById('output');
+                var feedbackElement = document.getElementById('feedback');
                 outputElement.innerText = 'Running code...';
+                feedbackElement.innerHTML = '';
 
-                // Gather inputs from the input fields
                 var inputs = [];
                 const inputFields = document.querySelectorAll('#inputs-container input');
                 inputFields.forEach((inputField) => {
-                    inputs.push(inputField.value); // Collect the value from each input field
+                    inputs.push(inputField.value);
                 });
 
-                console.log('Sending code and inputs to server:', code, inputs);
+                var challengeId = document.getElementById('challengeSelect').value;
 
                 fetch('/OnlineIDE/RunCode', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ code: code, inputs: inputs, language: 'python' }),
+                    body: JSON.stringify({
+                        code: code,
+                        inputs: inputs,
+                        language: 'python',
+                        challengeId: challengeId ? parseInt(challengeId) : null
+                    }),
                 })
                     .then(response => response.json())
                     .then(data => {
-                        console.log('Received data:', data);
                         if (data.success) {
-                            console.log('Raw output:', data.output);
+                            // Clean and display the output
+                            outputElement.innerText = data.output;
 
-                            // Split the output into lines
-                            var lines = data.output.split('\n');
-                            console.log('Lines of output:', lines);
-
-                            // Clean each line
-                            var cleanLines = lines.map(line => line.replace(/^\s*[\u0000-\u001F\u007F-\u009F]+/, '').trim());
-                            console.log('Cleaned lines:', cleanLines);
-
-                            // Join the cleaned lines back together and update the output element
-                            outputElement.innerText = cleanLines.join('\n'); // Join back with newlines
+                            // Display feedback
+                            if (data.feedback) {
+                                feedbackElement.innerHTML = `<div class="alert ${data.isCorrect ? 'alert-success' : 'alert-danger'}">${data.feedback}</div>`;
+                            }
                         } else {
-                            console.log('Error output:', data.output);
                             outputElement.innerText = 'Error: ' + data.output;
                         }
-                        console.log('Output element text:', outputElement.innerText);
                     })
                     .catch((error) => {
                         console.error('Error:', error);
@@ -98,8 +102,27 @@
                     });
             });
 
+            document.getElementById('challengeSelect').addEventListener('change', function () {
+                var challengeId = this.value;
+                if (challengeId) {
+                    fetch(`/OnlineIDE/GetChallenge?id=${challengeId}`)
+                        .then(response => response.json())
+                        .then(challenge => {
+                            document.getElementById('challengeDescription').innerHTML = `
+                                        <h4>${challenge.title}</h4>
+                                        <p>${challenge.description}</p>
+                                        <p>Expected Output: ${challenge.expectedOutput}</p>
+                                        <p>Difficulty: ${challenge.difficulty}</p>
+                                    `;
+                            editor.setValue(challenge.initialCode);
+                        });
+                } else {
+                    document.getElementById('challengeDescription').innerHTML = '';
+                    editor.setValue('# Write your Python code here\nprint("Hello, World!")');
+                }
+                document.getElementById('feedback').innerHTML = '';
+            });
 
-            // Initialize input fields when the page is loaded
             generateInputFields();
         });
     </script>
