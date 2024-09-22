@@ -10,6 +10,9 @@
 
   <ItemGroup>
     <PackageReference Include="Docker.DotNet" Version="3.125.15" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.68.0" />
+    <PackageReference Include="Google.Apis.Calendar.v3" Version="1.68.0.3536" />
+    <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.68.0.1869" />
     <PackageReference Include="LangChain.Core" Version="0.15.0" />
     <PackageReference Include="LangChain.Databases.Sqlite" Version="0.15.2" />
     <PackageReference Include="LangChain.DocumentLoaders.Html" Version="0.15.0" />

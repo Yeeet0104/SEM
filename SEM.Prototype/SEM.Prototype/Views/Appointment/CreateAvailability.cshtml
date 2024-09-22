@@ -8,11 +8,11 @@
         <input asp-for="Staff.StaffName" class="form-control" />
         <span asp-validation-for="Staff.StaffName" class="text-danger"></span>
     </div>
-    <div class="form-group">
+@*     <div class="form-group">
         <label asp-for="Staff.GoogleMeetLink">Google Meet Link</label>
         <input asp-for="Staff.GoogleMeetLink" class="form-control" />
         <span asp-validation-for="Staff.GoogleMeetLink" class="text-danger"></span>
-    </div>
+    </div> *@
     <div id="availableSlots">
         @for (int i = 0; i < Model.AvailableSlots.Count; i++)
         {
