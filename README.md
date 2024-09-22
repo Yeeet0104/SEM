@@ -3,7 +3,12 @@
 ## List of function
 
 1. Chatbot
-2. ...
+2. Event Calendar
+3. Integrated Scholarship and Financial Aid Calculator
+4. Feedback Form Tool
+5. Online Integrated Development Environment
+6. Meeting Schedule Calendar
+7. Visit Request
 
 ##  Instruction
 
