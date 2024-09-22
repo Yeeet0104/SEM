@@ -1,0 +1,57 @@
+﻿@model SEM.Prototype.Models.CalendarViewModel
+
+<h2>Manage Available Staff and Booked Appointments</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Staff Name</th>
+            <th>Available Slots</th>
+            <th>Booked Appointments</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var availableStaff in Model.AvailableStaffs)
+        {
+            <tr>
+                <td>@availableStaff.Staff.StaffName</td> <!-- Display Staff Name -->
+
+                <td>
+                    <ul>
+                        @foreach (var slot in availableStaff.AvailableSlots)
+                        {
+                            <li>@slot.DayOfWeek: @slot.StartTime - @slot.EndTime</li> <!-- Display Available Time Slots -->
+                        }
+                    </ul>
+                </td>
+
+                <td>
+                    <ul>
+                        <!-- Filter appointments by StaffId in UserAppointment -->
+                        @foreach (var appointment in Model.BookedAppointments.Where(a => a.StaffId == availableStaff.StaffId))
+                        {
+                            <li>
+                                @appointment.AppointmentDateTime - @appointment.GMeetLink
+                                <button class="btn btn-danger" onclick="deleteAppointment(@appointment.Id)">Remove Appointment</button>
+                            </li>
+                        }
+                    </ul>
+                </td>
+
+                <td>
+                    <a class="btn btn-primary" href="/Appointment/EditStaffAvailability/@availableStaff.Id">Edit Availability</a>
+                    <a class="btn btn-danger" href="/Appointment/DeleteStaffFromAvailability?staffId=@availableStaff.StaffId">Delete Staff</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function deleteAppointment(appointmentId) {
+        if (confirm('Are you sure you want to remove this appointment?')) {
+            window.location.href = '/Appointment/DeleteAppointmentFromStaff/' + appointmentId;
+        }
+    }
+</script>
