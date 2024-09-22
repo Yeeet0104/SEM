@@ -1,0 +1,34 @@
+About FOCS
+
+year 1972
+- Founded as School of Arts and Science (SAS) under Tunku Abdul Rahman Collage (TARC)
+
+year 2013
+- Restructured as Faculty of Applied Sciences and Computing (FASC) when TARC was upgraded to Tunku Abdul Rahman University Collage (TARUC)
+
+year 2017
+- Faculty of Computing and Information Technology (FOCS) was formed.
+
+
+We offer programmes that cover all 5 major disciplines of computing which are: 
+- Computer Science
+- Data Science 
+- Software Engineering 
+- Information Technology 
+- Information Systems
+
+Our strength or areas of expertise:
+- Computer vision
+- Image processing
+- Text analytics
+- Web and mobile computing
+- Game development
+- Augmented Reality (AR) and Virtual Reality (VR)
+- Software design and development
+- Predictive and forecast modelling (big data analytics)
+- Network detection and prevention
+- Cybersecurity
+- Internet of Things (IoT)
+- Blockchain
+- Mathematical Sciences
+- Data Science

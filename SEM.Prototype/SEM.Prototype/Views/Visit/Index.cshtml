@@ -1,0 +1,81 @@
+﻿@model SEM.Prototype.Models.VisitViewModel
+@{
+    ViewData["Title"] = "FOCS Visit Request";
+}
+
+<h2>FOCS Visit Request</h2>
+
+<div class="alert alert-info">
+    <p>Please note that FOCS visits can only be requested for Saturdays and Sundays.</p>
+    <p>Time: 9am-6pm</p>
+    <p>Place: Block B</p>
+    <p>After submitting your request, a FOCS staff member will send you a confirmation email within one day to indicate whether your visit request has been approved or not.</p>
+</div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        Please correct the errors below and try again.
+    </div>
+}
+
+@Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+<form asp-action="Index" method="post">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="VisitDate"></label>
+        <input asp-for="VisitDate" class="form-control" type="date" />
+        <span asp-validation-for="VisitDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="VisitPurpose"></label>
+        <textarea asp-for="VisitPurpose" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="VisitPurpose" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Confirm Request</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(function () {
+            // Set min date to tomorrow
+            var tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            $('#VisitDate').attr('min', tomorrow.toISOString().split('T')[0]);
+
+            // Disable weekdays
+            $('#VisitDate').on('input', function () {
+                var day = new Date(this.value).getUTCDay();
+                if ([0, 6].indexOf(day) < 0) {
+                    this.setCustomValidity('Please select a Saturday or Sunday');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        });
+    </script>
+}
