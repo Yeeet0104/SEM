@@ -88,11 +88,17 @@ namespace SEM.Prototype.Utils
                     embeddingModel,
                     dataSource: DataSource.FromPath(file))
             ).ToArray();
+            try
+            {
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception
+                Console.WriteLine(ex.Message);
+            }
 
-            // Wait for all tasks to complete
-            await Task.WhenAll(tasks);
-
-            Console.WriteLine("Complete Loading the text files...\n");  
+            Console.WriteLine("Complete Loading the text files...\n");
 
         }
     }

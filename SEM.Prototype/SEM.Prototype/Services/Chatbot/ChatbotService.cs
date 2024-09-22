@@ -44,7 +44,7 @@ namespace SEM.Prototype.Services.Chatbot
             _vectorDatabase = new SqLiteVectorDatabase(dataSource: "vectors.db");
 
             var template = @"
-The following is a friendly and informative conversation between a human and an AI. Transcript a dialog whare the AI will respond to the human's queries in markdown and strcutured format based on the context provided below. AI will provide short, clear, concise, and friendly responses that align with the university's values and maintain a supportive tone throughout the conversation. This AI is designed to assist students, prospective students, and others by offering accurate and helpful information about the Faculty of Computing and Information Technology (FOCS) at Tunku Abdul Rahman University of Management and Technology (TARUMT), previously known as Tunku Abdul Rahman University College (TARUC).
+The following is a friendly and informative conversation between a Human and an AI. Transcript a dialog whare the AI will respond to the Human's queries in markdown and strcutured format. AI will response based on the context provided below. AI will provide short, clear, concise, and friendly responses that align with the university's values and maintain a supportive tone throughout the conversation. This AI is designed to assist Humans, prospective Humans, and others by offering accurate and helpful information about the Faculty of Computing and Information Technology (FOCS) at Tunku Abdul Rahman University of Management and Technology (TARUMT), previously known as Tunku Abdul Rahman University College (TARUC).
 
 {context}
 
@@ -83,7 +83,11 @@ AI: ";
             var similarDocuments = await vectorCollection.GetSimilarDocuments(
                 _embeddingModel,
                 question,
-                amount: 5);
+                amount: 5,
+                VectorSearchType.SimilarityScoreThreshold,
+                0.8f
+            );
+
             Console.WriteLine("\nSimilar Documents : \n" + similarDocuments.AsString() + "\n");
 
             Console.WriteLine("\nResponding...");
