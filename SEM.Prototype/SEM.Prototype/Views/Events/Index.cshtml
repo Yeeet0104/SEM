@@ -14,11 +14,18 @@
 
 
 <!-- Display the page title and message using ViewBag -->
-<h1>@ViewBag.Title</h1>
+<div class="d-flex justify-content-between">
+    <h1>@ViewBag.Title</h1>
+
+    <a class="btn btn-primary" asp-controller="Admin" asp-action="Index">Edit Event</a>
+
+</div>
 <p>@ViewBag.Message</p>
 
 
-<div id="calendar"></div>
+
+<div  style="height:500px" id="calendar"></div>
+
 <!-- Event Details Modal -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
     <div class="modal-dialog">

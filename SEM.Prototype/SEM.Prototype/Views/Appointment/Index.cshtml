@@ -28,6 +28,7 @@
 <div class="row">
     <!-- Staff List on the Left -->
     <div class="col-md-2">
+
         <h4>Available Staff</h4>
         <div id="staff-list">
             @foreach (var staff in Model.AvailableStaffs)
@@ -54,6 +55,7 @@
         <div id="calendar"></div>
     </div>
 </div>
+<a href="/Appointment/CreateAvailability" class="btn btn-info">Create AvailableStaff</a>
 }
 else
 {
