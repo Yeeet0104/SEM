@@ -3,10 +3,10 @@
 @{
     ViewBag.Title = "Fee Calculator";
 }
-<button type="button" class="btn btn-primary" onclick="toggleCalculator()">Fee Calculator</button>
+<button type="button" class="btn btn-primary" style="margin-bottom:20px;" onclick="toggleCalculator()">Fee Calculator</button>
 
 <div id="calculatorForm" style="display: none;">
-    <h5>Fee Calculator</h5>
+    <h2>Fee Calculator</h2>
     <form asp-action="Calculate" method="post" id="feeCalculatorForm">
         <div class="form-group">
             <label for="Programme">Programme</label>
@@ -44,13 +44,26 @@
             <input type="number" id="Cgpa" name="Cgpa" class="form-control" step="0.01" placeholder="Enter CGPA" />
         </div>
 
-        <button type="submit" class="btn btn-primary">Calculate Fee</button>
+        <button type="submit" class="btn btn-primary" style="margin-top:30px;">Calculate Fee</button>
     </form>
-    <div id="feeBreakdown"></div>
+    <div id="feeBreakdown" style="margin-top:20px;"></div>
+    <button id="exportFeePDF" class="btn btn-secondary" style="display: none;">Export Fee </button>
+    
 </div>
 
-<div id="courseComparison">
-    <h5>Course Comparison</h5>
+<div id="courseComparison" style="margin-top:30px;">
+    <h2>Course Comparison</h2>
+    <div id="filterOptions" style="margin-top: 20px;">
+        <h5>Filter Attributes</h5>
+        <button class="toggle-btn" id="toggleOverview" onclick="toggleFilter('Overview')">Overview</button>
+        <button class="toggle-btn" id="toggleCampuses" onclick="toggleFilter('Campuses')">Campuses</button>
+        <button class="toggle-btn" id="toggleIntake" onclick="toggleFilter('Intake')">Intake</button>
+        <button class="toggle-btn" id="toggleMinimumEntryRequirements" onclick="toggleFilter('MinimumEntryRequirements')">Minimum Entry Requirements</button>
+        <button class="toggle-btn" id="toggleAcademicProgression" onclick="toggleFilter('AcademicProgression')">Academic Progression</button>
+        <button class="toggle-btn" id="toggleCareerProspects" onclick="toggleFilter('CareerProspects')">Career Prospects</button>
+        <button class="toggle-btn" id="toggleFees" onclick="toggleFilter('Fees')">Fees</button>
+    </div>
+
     <form id="comparisonForm">
         <div class="form-group">
             <label>Select Courses to Compare:</label><br />
@@ -63,13 +76,39 @@
 
                 <input type="checkbox" id="diplomaSF" name="courses" value="Diploma in Software Engineering" onchange="updateComparisonDetails()" />
                 <label for="diplomaSE">Diploma in Software Engineering</label><br />
+
+                <input type="checkbox" id="degreeMM" name="courses" value="Bachelor of Science (Honours) in Management Mathematics with Computing" onchange="updateComparisonDetails()" />
+                <label for="degreeMM">Bachelor of Science (Honours) in Management Mathematics with Computingg</label><br />
+
+                <input type="checkbox" id="degreeEI" name="courses" value="Bachelor of Information Systems (Honours) in Enterprise Information Systems" onchange="updateComparisonDetails()" />
+                <label for="degreeEI">Bachelor of Information Systems (Honours) in Enterprise Information Systems</label><br />
+
+                <input type="checkbox" id="degreeIS" name="courses" value="Bachelor of Computer Science (Honours) in Interactive Software Technology" onchange="updateComparisonDetails()" />
+                <label for="degreeIS">Bachelor of Computer Science (Honours) in Interactive Software Technology</label><br />
+
+                <input type="checkbox" id="degreeIS2" name="courses" value="Bachelor of Information Technology (Honours) in Information Security" onchange="updateComparisonDetails()" />
+                <label for="degreeIS2">Bachelor of Information Technology (Honours) in Information Security</label><br />
+
+                <input type="checkbox" id="degreeDS" name="courses" value="Bachelor of Computer Science (Honours) in Data Science" onchange="updateComparisonDetails()" />
+                <label for="degreeDS">Bachelor of Computer Science (Honours) in Data Science</label><br />
+
+                <input type="checkbox" id="degreeSS" name="courses" value="Bachelor of Information Technology (Honours) in Software Systems Development" onchange="updateComparisonDetails()" />
+                <label for="degreeSS">Bachelor of Information Technology (Honours) in Software Systems Development</label><br />
+
+                <input type="checkbox" id="degreeSW" name="courses" value="Bachelor of Software Engineering (Honours)" onchange="updateComparisonDetails()" />
+                <label for="degreeSW">Bachelor of Software Engineering (Honours)</label><br />
+
+                <input type="checkbox" id="foundation" name="courses" value="Foundation in Computing" onchange="updateComparisonDetails()" />
+                <label for="foundation">Foundation in Computing</label><br />
             </div>
         </div>
-        <button type="button" class="btn btn-primary" onclick="compareCourses()">Compare</button>
+        <button type="button" class="btn btn-primary" style="margin-top:20px; margin-bottom:20px;" onclick="compareCourses()">Compare</button>
     </form>
     <div id="comparisonResult"></div>
 </div>
 
+
+<button id="exportPDF" style="margin-top:30px;">Export as PDF</button>
 
 
 
@@ -334,29 +373,46 @@
                     .then(data => {
                         if (data.success) {
                             var breakdownHtml = `
-                                    <div class="alert alert-info">
-                                        <h3>Fee Breakdown for ${data.courseName}: </h3>
-                                        <ul>
-                                            <li>Base Course Fee: ${data.baseFee}</li>
-                                            <li>Registration Fee (One Time Payment): ${data.registrationFee}</li>
-                                            <li>Caution Money (One Time Payment): ${data.cautionMoney}</li>
-                                            <li>Insurance Premium (Per Year): RM10.00</li>
-                                            <li>Facilities & Resource Fee (Per Year): RM200.00</li>
-                                            <li>Laboratory/ Workshop Fee (Per Year): RM500.00</li>
-                                            <li>Award Assessment Fee (Per Year): RM100.00</li>
-                                            <li>Scholarship Discount (Base Course Fee): ${data.discount}</li>
-                                            <li><strong>Total Fee For Two Years Duration: ${data.totalFee}</strong></li>
-                                        </ul>
-                                        <h5>You are eligible for a scholarship of ${data.discountPercentage}% off</h5>
-                                    </div>`;
+                                <div class="alert alert-info">
+                                    <h3>Fee Breakdown for ${data.courseName}: </h3>
+                                    <ul>
+                                        <li>Base Course Fee: ${data.baseFee}</li>
+                                        <li>Registration Fee (One Time Payment): ${data.registrationFee}</li>
+                                        <li>Caution Money (One Time Payment): ${data.cautionMoney}</li>
+                                        <li>Insurance Premium (Per Year): RM10.00</li>
+                                        <li>Facilities & Resource Fee (Per Year): RM200.00</li>
+                                        <li>Laboratory/ Workshop Fee (Per Year): RM500.00</li>
+                                        <li>Award Assessment Fee (Per Year): RM100.00</li>
+                                        <li>Scholarship Discount (Base Course Fee): ${data.discount}</li>
+                                        <li><strong>Total Fee For Two Years Duration: ${data.totalFee}</strong></li>
+                                    </ul>
+                                    <h5>You are eligible for a scholarship of ${data.discountPercentage}% off</h5>
+                                </div>`;
                             document.getElementById('feeBreakdown').innerHTML = breakdownHtml;
+
+                            // Show the export button only when the fee calculation is successful
+                            document.getElementById('exportFeePDF').style.display = 'block';
+                        } else {
+                            document.getElementById('feeBreakdown').innerHTML = '<div class="alert alert-danger">Calculation failed. Please try again.</div>';
+                            // Hide the export button if the calculation fails
+                            document.getElementById('exportFeePDF').style.display = 'none';
                         }
                         document.getElementById('calculatorForm').style.display = 'block';
-                    })
+                    });
             });
         });
 
-        function updateComparisonDetails() {
+        document.getElementById('exportFeePDF').addEventListener('click', function () {
+            html2canvas(document.querySelector('#feeBreakdown')).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                pdf.addImage(imgData, 'PNG', 10, 10);
+                pdf.save('fee-calculation.pdf');
+            });
+        });
+
+                function updateComparisonDetails() {
             const checkboxes = document.querySelectorAll('input[name="courses"]:checked');
 
             if (checkboxes.length > 3) {
@@ -400,27 +456,93 @@
                 return;
             }
 
+            // Get active filters from the toggle buttons
+            const activeFilters = Array.from(document.querySelectorAll('.toggle-btn.active')).map(button => button.textContent.trim());
+
+            // If no filters are active, show all details
+            const showAllDetails = activeFilters.length === 0;
+
             // Generate comparison result HTML
             const resultHTML = `<div class="comparison-container">
                     ${Object.keys(data).map(courseName => {
                 const course = data[courseName]; // Access course details
                 return `<div class="course">
-                                    <p class="course-overview"><strong>Overview:</strong> ${course.Overview}</p>
-                                            <p class="course-campuses"><strong>Campuses: </strong>${course.Campuses.join(', ')}</p>
-                                            <p class="course-intake"><strong>Intake: </strong>${course.Intake}</p>
-                                            <p class="course-entry-requirements"><strong>Minimum Entry Requirements:</strong> <img src="/Images/${course.MinimumEntryRequirements}" alt="Entry Requirements" /></p>
-                                            <p class="course-academic-progression"><strong>Academic Progression: </strong>${course.AcademicProgression.join(', ')}</p>
-                                            <p class="course-career-prospects"><strong>Career Prospects: </strong>${course.CareerProspects.join(', ')}</p>
-                                            <p class="course-fees"><strong>Fees: </strong>${course.Fee}</p>
+                        ${showAllDetails ? `
+                            <p class="course-overview"><strong>Overview:</strong> ${course.Overview}</p>
+                            <p class="course-campuses"><strong>Campuses: </strong>${course.Campuses.join(', ')}</p>
+                            <p class="course-intake"><strong>Intake: </strong>${course.Intake}</p>
+                            <p class="course-entry-requirements"><strong>Minimum Entry Requirements:</strong> <img src="/Images/${course.MinimumEntryRequirements}" alt="Entry Requirements" /></p>
+                            <p class="course-academic-progression"><strong>Academic Progression: </strong>${course.AcademicProgression.join(', ')}</p>
+                            <p class="course-career-prospects"><strong>Career Prospects: </strong>${course.CareerProspects.join(', ')}</p>
+                            <p class="course-fees"><strong>Fees: </strong>${course.Fee}</p>
+                        ` :
+                        activeFilters.map(filter => {
+                            if (filter === 'Overview') {
+                                return `<p class="course-overview"><strong>Overview:</strong> ${course.Overview}</p>`;
+                            } else if (filter === 'Campuses') {
+                                return `<p class="course-campuses"><strong>Campuses: </strong>${course.Campuses.join(', ')}</p>`;
+                            } else if (filter === 'Intake') {
+                                return `<p class="course-intake"><strong>Intake: </strong>${course.Intake}</p>`;
+                            } else if (filter === 'Minimum Entry Requirements') {
+                                return `<p class="course-entry-requirements"><strong>Minimum Entry Requirements:</strong> <img src="/Images/${course.MinimumEntryRequirements}" alt="Entry Requirements" /></p>`;
+                            } else if (filter === 'Academic Progression') {
+                                return `<p class="course-academic-progression"><strong>Academic Progression: </strong>${course.AcademicProgression.join(', ')}</p>`;
+                            } else if (filter === 'Career Prospects') {
+                                return `<p class="course-career-prospects"><strong>Career Prospects: </strong>${course.CareerProspects.join(', ')}</p>`;
+                            } else if (filter === 'Fees') {
+                                return `<p class="course-fees"><strong>Fees: </strong>${course.Fee}</p>`;
+                            }
+                        }).join('')}
                         </div>`;
             }).join('')}
-                </div>`;
 
+                </div>`;
 
             comparisonResultDiv.innerHTML = resultHTML;
         }
 
+
+
+        function toggleFilter(filter) {
+            const button = document.getElementById(`toggle${filter}`);
+            button.classList.toggle('active'); // Toggle active class
+            compareCourses(); // Re-fetch results with the current filters
+        }
+
+
+        // PDF
+        document.getElementById('exportPDF').addEventListener('click', function () {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Get the comparison data container
+            const comparisonContainer = document.querySelector('.comparison-container');
+
+            // Use html2canvas to capture the comparisonContainer as an image
+            html2canvas(comparisonContainer).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 190; // Adjust width to fit the page
+                const pageHeight = 285;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                // Add the image to the PDF
+                doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                // If the image exceeds the page height, add a new page and continue
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    doc.addPage();
+                    doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+
+                // Save the generated PDF
+                doc.save('course-comparison.pdf');
+            });
+        });
+
     </script>
 }
-
-
