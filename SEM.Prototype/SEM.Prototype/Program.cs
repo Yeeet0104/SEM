@@ -10,6 +10,7 @@ using SEM.Prototype.Services.Feedback;
 
 using SEM.Prototype.Services;
 using SEM.Prototype.Services.OnlineIDE;
+using SEM.Prototype.Services.Visit;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,7 +33,7 @@ builder.Services.AddTransient<IFeedbackService, FeedbackService>();
 builder.Services.AddSingleton<CodeExecutionService>();
 builder.Services.AddScoped<ChallengeService>();
 
-
+builder.Services.AddScoped<IVisitService, VisitService>();
 
 // Adding Identity for user authentication
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()

@@ -1,0 +1,28 @@
+Programmes
+
+Foundation
+- Foundation in Computing
+
+Diploma
+- Diploma in Computer Science
+- Diploma in Information Technology
+- Diploma in Software Engineering (Sabah Branch)
+
+Bachelor Degree
+- Bachelor of Science (Honours) in Management Mathematics with Computing
+- Bachelor of Information Systems (Honours) in Enterprise Information System
+- Bachelor of Computer Science (Honours) in Interactive Software Technology
+- Bachelor of Information Systems (Honours) in Information Security
+- Bachelor of Computer Science (Honours) in Data Science
+- Bachelor of Information Systems (Honours) in Software Systems Development
+- Bachelor of Software Engineering (Honours)
+
+Master Degree
+- Master of Computer Science
+- Master of Information Technology
+- Master of Science in Mathematical Sciences
+
+PhD
+- Doctor of Philosophy in Computer Science
+- Doctor of Philosophy (Information Technology)
+- Doctor of Philosophy (Mathematical Sciences)
