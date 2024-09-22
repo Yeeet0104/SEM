@@ -105,7 +105,13 @@ body {
     border-radius: 5px;
     font-weight: bold;
 }
-
-    .enroll-btn:hover {
+.enroll-btn:hover {
         background-color: #218838;
+    }
+.nav-special {
+    transition: transform 0.3s ease; /* Smooth transformation on hover */
+}
+
+    .nav-special:hover {
+        transform: scale(1.1); /* Increase size by 10% on hover */
     }
