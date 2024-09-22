@@ -48,7 +48,16 @@ namespace SEM.Prototype.Controllers
             return View(viewModel);  // Return the correct view model
         }
 
-
+        public IActionResult DeleteAppointmentFromStaff(int id)
+        {
+            var appointment = _context.UserAppointments.Find(id);
+            if (appointment != null)
+            {
+                _context.UserAppointments.Remove(appointment);
+                _context.SaveChanges();
+            }
+            return RedirectToAction("ManageStaffAndAppointments");
+        }
         [HttpPost]
         public IActionResult DeleteAppointment(int appointmentId)
         {
@@ -71,6 +80,63 @@ namespace SEM.Prototype.Controllers
             }
 
             return Json(new { success = false, message = "Appointment not found" });
+        }
+
+        [HttpGet]
+        public IActionResult EditStaffAvailability(int id)
+        {
+            // Find the available staff by id and include the related slots
+            var availableStaff = _context.AvailableStaffs
+                .Include(a => a.AvailableSlots)
+                .Include(a => a.Staff) // Include the staff to display the staff name
+                .FirstOrDefault(a => a.Id == id);
+
+            if (availableStaff == null)
+            {
+                return NotFound();
+            }
+
+            return View(availableStaff);  // Pass the available staff to the view
+        }
+        [HttpPost]
+        public IActionResult EditStaffAvailability(AvailableStaff updatedAvailability)
+        {
+            // Fetch the existing availability from the database
+            var existingStaffAvailability = _context.AvailableStaffs
+                .Include(a => a.AvailableSlots)
+                .Include(a => a.Staff)
+                .FirstOrDefault(a => a.Id == updatedAvailability.Id);
+
+            if (existingStaffAvailability != null)
+            {
+                // Update the existing available slots with the submitted data
+                existingStaffAvailability.AvailableSlots = updatedAvailability.AvailableSlots;
+
+                // Find the staff member's appointments
+                var appointments = _context.UserAppointments
+                    .Where(u => u.StaffId == existingStaffAvailability.StaffId)
+                    .ToList();
+
+                foreach (var appointment in appointments)
+                {
+                    // Check if the appointment falls within the new available slots
+                    var isValid = existingStaffAvailability.AvailableSlots.Any(slot =>
+                        slot.DayOfWeek == appointment.AppointmentDateTime.DayOfWeek &&
+                        slot.StartTime <= appointment.AppointmentDateTime.TimeOfDay &&
+                        slot.EndTime >= appointment.AppointmentDateTime.TimeOfDay
+                    );
+
+                    if (!isValid)
+                    {
+                        // Mark the appointment as cancelled (e.g., by setting a status or description)
+                        appointment.GMeetLink = "Appointment Cancelled"; // or another field to mark as invalid
+                    }
+                }
+
+                _context.SaveChanges();  // Save the changes to the database
+            }
+
+            return RedirectToAction("ManageStaffAndAppointments");  // Redirect back to the management page
         }
 
 
@@ -275,6 +341,59 @@ namespace SEM.Prototype.Controllers
             // Return the Google Meet link
             return createdEvent.HangoutLink;
         }
+
+        public IActionResult ManageStaffAndAppointments()
+        {
+            // Retrieve AvailableStaff, their available slots, and booked appointments through UserAppointment
+            var availableStaffList = _context.AvailableStaffs
+                .Include(a => a.Staff)                           // Include the associated Staff
+                .Include(a => a.AvailableSlots)                  // Include available slots
+                .ToList();
+
+            // Retrieve booked appointments by going through UserAppointments
+            var bookedAppointments = _context.BookedAppointments
+                .Include(b => b.Appointments)
+                .ThenInclude(ua => ua.Staff)                     // Include the staff in each appointment
+                .ToList();
+
+            // Use the CalendarViewModel to pass data
+            var model = new CalendarViewModel
+            {
+                AvailableStaffs = availableStaffList,
+                BookedAppointments = bookedAppointments.SelectMany(b => b.Appointments).ToList()
+            };
+
+            return View(model);
+        }
+
+        public IActionResult DeleteStaffFromAvailability(int staffId)
+        {
+            // Find the AvailableStaff entry for the given staffId
+            var availableStaff = _context.AvailableStaffs
+                .Include(a => a.AvailableSlots) // Include the availability slots
+                .FirstOrDefault(a => a.StaffId == staffId);
+
+            if (availableStaff != null)
+            {
+                // Remove all availability slots for this staff member
+                _context.AvailableSlots.RemoveRange(availableStaff.AvailableSlots);
+
+                // Remove the AvailableStaff entry
+                _context.AvailableStaffs.Remove(availableStaff);
+
+                // Optionally, remove the Staff entity if required
+                var staff = _context.Staffs.FirstOrDefault(s => s.Id == staffId);
+                if (staff != null)
+                {
+                    _context.Staffs.Remove(staff);
+                }
+
+                _context.SaveChanges();  // Save the changes to the database
+            }
+
+            return RedirectToAction("ManageStaffAndAppointments");
+        }
+
         // GET: Appointment/Index
         public IActionResult Index()
         {

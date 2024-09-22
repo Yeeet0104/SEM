@@ -1,0 +1,50 @@
+﻿@model SEM.Prototype.Models.AvailableStaff
+
+<h2>Edit Availability for @Model.Staff.StaffName</h2>
+
+<form asp-action="EditStaffAvailability" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label>Available Slots</label>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Day of Week</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="availableSlotsBody">
+                @for (int i = 0; i < Model.AvailableSlots.Count; i++)
+                {
+                    <tr id="slotRow_@i">
+                        <td>
+                            <select asp-for="AvailableSlots[@i].DayOfWeek" class="form-control">
+                                @foreach (var day in Enum.GetValues(typeof(DayOfWeek)))
+                                {
+                                    @if (Model.AvailableSlots[@i].DayOfWeek == (DayOfWeek)day)
+                                    {
+                                        <option value="@day" selected="selected">@day</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@day">@day</option>
+                                    }
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <input asp-for="AvailableSlots[@i].StartTime" class="form-control" type="time" />
+                        </td>
+                        <td>
+                            <input asp-for="AvailableSlots[@i].EndTime" class="form-control" type="time" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>

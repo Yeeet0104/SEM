@@ -23,7 +23,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <h2>Schedule an Appointment</h2>
-
+@if (User.Identity.IsAuthenticated)
+{
 <div class="row">
     <!-- Staff List on the Left -->
     <div class="col-md-2">
@@ -38,8 +39,8 @@
                     <ul>
                         @foreach (var slot in staff.AvailableSlots)
                         {
-                            <li>
-                                @slot.DayOfWeek: @slot.StartTime.ToString("hh\\:mm") - @slot.EndTime.ToString("hh\\:mm")
+                            <li style="font-size:13px">
+                                @slot.DayOfWeek: @DateTime.Today.Add(slot.StartTime).ToString("hh:mm tt") - @DateTime.Today.Add(slot.EndTime).ToString("hh:mm tt")
                             </li>
                         }
                     </ul>
@@ -53,7 +54,14 @@
         <div id="calendar"></div>
     </div>
 </div>
-
+}
+else
+{
+    <div class="alert alert-warning">
+        <strong>You need to log in to view and schedule appointments.</strong>
+    </div>
+    <a class="btn btn-primary" asp-area="" asp-controller="Account" asp-action="SignIn">Log In</a>
+}
 
 <!-- Bootstrap Modal for Event Details -->
 <div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
@@ -101,7 +109,13 @@
     // Use the bookedAppointments data to pass into the FullCalendar's events.
     var bookedAppointments = @Html.Raw(Json.Serialize(Model.BookedAppointments));  // Pass booked appointments to JavaScript
     console.log("Booked Appointments:", bookedAppointments);  // Log the appointments
-
+    bookedAppointments.forEach(appointment => {
+        console.log("Appointment gMeetLink:", appointment.gMeetLink);
+        var testing = appointment.gMeetLink ? appointment.gMeetLink.trim() : '';
+        console.log(testing == "Appointment Cancelled" ? 'red' : 'blue');
+    });
+    // Get today's date for comparison
+    var today = new Date().setHours(0, 0, 0, 0);  // Normalize today's date to midnight
     document.addEventListener('DOMContentLoaded', function () {
         var staffListEl = document.getElementById('staff-list');
         var calendarEl = document.getElementById('calendar');
@@ -125,14 +139,28 @@
             initialView: 'dayGridMonth',
             editable: true,
             droppable: true,
-            events: bookedAppointments.map(appointment => ({
-                title: appointment.staff.staffName,
-                start: appointment.appointmentDateTime,
-                extendedProps: {
-                    appointmentId: appointment.id,
-                    gMeetLink: appointment.gMeetLink
-                }
-            })),
+            events: bookedAppointments.map(appointment => {
+                var appointmentDate = new Date(appointment.appointmentDateTime).setHours(0, 0, 0, 0);
+
+                // If the appointment is in the past, mark it red and remove the GMeet link
+                var isPast = appointmentDate < today;
+                const test = appointment.gMeetLink ? appointment.gMeetLink.trim() : ''; // Trim gMeetLink
+
+                console.log("Appointment gMeetLink:", test);
+
+                return {
+                    title: appointment.staff.staffName,
+                    start: appointment.appointmentDateTime,
+                    backgroundColor: test === 'Appointment Cancelled' ? 'red' : 'blue',  // Consistent casing here
+                    editable: false,  // Make pre-existing events non-editable
+                    color: isPast ? 'red' : 'blue' ,
+                    extendedProps: {
+                        appointmentId: appointment.id,
+                        gMeetLink: isPast ? 'Closed' : appointment.gMeetLink
+                    }
+                        
+                };
+            }),
             // Custom time format for events
             eventTimeFormat: {
                 hour: 'numeric',
@@ -173,11 +201,20 @@
             eventClick: function (info) {
                 var gMeetLink = info.event.extendedProps.gMeetLink;
 
-                // Modify the modal content to include the Google Meet link
-                $('#eventDetailsContent').html(
-                    "Event: " + info.event.title + " on " + info.event.start.toLocaleString() +
-                    "<br>Google Meet Link: <a href='" + gMeetLink + "' target='_blank'>" + gMeetLink + "</a>"
-                );
+                // Check if the appointment is cancelled
+                if (gMeetLink.trim() === 'Appointment Cancelled' || gMeetLink.trim() === 'Closed') {
+                    // If the appointment is cancelled, do not render the link
+                    $('#eventDetailsContent').html(
+                        "Event: " + info.event.title + " on " + info.event.start.toLocaleString() +
+                        "<br>Status: " + gMeetLink  // Just display the cancellation status
+                    );
+                } else {
+                    // If not cancelled, render the Google Meet link as a clickable link
+                    $('#eventDetailsContent').html(
+                        "Event: " + info.event.title + " on " + info.event.start.toLocaleString() +
+                        "<br>Google Meet Link: <a href='" + gMeetLink + "' target='_blank'>" + gMeetLink + "</a>"
+                    );
+                }
 
                 $('#eventDetailsModal').modal('show');
 
