@@ -38,7 +38,7 @@ namespace SEM.Prototype.Services.OnlineIDE
                     InitialCode = "def is_palindrome(s):\n    # Your code here\n    pass\n\n# Test your function\nprint(is_palindrome('racecar'))",
                     ExpectedOutput = "True",
                     Difficulty = "Easy",
-                    YouTubeVideoId = "9degjR16bY"
+                    YouTubeVideoId = "XMMmvv4wZtQ"
                 },
                 new CodingChallenge
                 {
