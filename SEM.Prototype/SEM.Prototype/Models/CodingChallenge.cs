@@ -8,5 +8,6 @@
         public string InitialCode { get; set; }
         public string ExpectedOutput { get; set; }
         public string Difficulty { get; set; }
+        public string YouTubeVideoId { get; set; } 
     }
 }
