@@ -18,7 +18,7 @@ namespace SEM.Prototype.Services.OnlineIDE
                     InitialCode = "def sum_two_numbers(a, b):\n    # Your code here\n    pass\n\n# Test your function\nprint(sum_two_numbers(5, 3))",
                     ExpectedOutput = "8",
                     Difficulty = "Easy",
-                    YouTubeVideoId = "NYfwuojKHRA"
+                    YouTubeVideoId = "c5HKHWznqAI"
                 },
                 new CodingChallenge
                 {
