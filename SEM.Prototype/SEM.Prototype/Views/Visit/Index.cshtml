@@ -56,6 +56,18 @@
     <button type="submit" class="btn btn-primary">Confirm Request</button>
 </form>
 
+<!-- Add a heading and space for the iframe -->
+<h3 style="margin-top: 40px;">Virtual Tour</h3>
+
+<iframe src="https://www.google.com/maps/embed?pb=!1m0!3m2!1sen!2sus!4v1431596636661!6m8!1m7!1sLBWZFv5i3pkAAAQfDQSO7Q!2m2!1d3.213846!2d101.726734!3f277.29794!4f14.041719999999998!5f0.7820865974627469"
+        width="650"
+        height="500"
+        style="border:0; margin-top: 10px;"
+        allowfullscreen=""
+        loading="lazy">
+</iframe>
+
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
