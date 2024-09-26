@@ -9,6 +9,7 @@
 5. Online Integrated Development Environment
 6. Meeting Schedule Calendar
 7. Visit Request
+8. Virtual Tour
 
 ##  Instruction
 
@@ -16,14 +17,14 @@
 
 1. Download [ollama](https://ollama.com/download)
 
-2. Download `ollama3.1` (llm) & `all-minilm` (embedding)
+2. Download `ollama3.1` (llm) & `nomic-embed-text` (embedding)
 
    - > **Note :** 
      >
      > - You may want to change the path to save the model, simply open Environment Variable, add new user variables `OLLAMA_MODELS`, and put the path in Value
      > - Also make sure the ollama server is running, else ollama cmd will not work
 
-   - Open terminal run `ollama pull llama3.1` & `ollama pull all-minilm` 
+   - Open terminal run `ollama pull llama3.1` & `ollama pull nomic-embed-text` 
 
    - Then gaodim aldy
 
