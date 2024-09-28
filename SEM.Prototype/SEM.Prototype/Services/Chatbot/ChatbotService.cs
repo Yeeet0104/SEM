@@ -26,8 +26,9 @@ namespace SEM.Prototype.Services.Chatbot
         {
             var provider = new OllamaProvider(options: new RequestOptions
             {
-                Temperature = 0.1f,
+                Temperature = 0.0f,
                 Stop = ["Human:"],
+                NumCtx = 4096, // 
                 AdditionalProperties = new Dictionary<string, object>
                 {
                     // configured based on : https://github.com/ollama/ollama/pull/2146#issue-2094810743 
@@ -44,7 +45,7 @@ namespace SEM.Prototype.Services.Chatbot
             _vectorDatabase = new SqLiteVectorDatabase(dataSource: "vectors.db");
 
             var template = @"
-The following is a friendly and informative conversation between a Human and an AI. Transcript a dialog whare the AI will respond to the Human's queries in markdown and strcutured format. AI will response based on the context provided below. AI will provide short, clear, concise, and friendly responses that align with the university's values and maintain a supportive tone throughout the conversation. This AI is designed to assist Humans, prospective Humans, and others by offering accurate and helpful information about the Faculty of Computing and Information Technology (FOCS) at Tunku Abdul Rahman University of Management and Technology (TARUMT), previously known as Tunku Abdul Rahman University College (TARUC).
+The following is a friendly and informative conversation between a Human and an AI. Transcript a dialog whare the AI will respond to all the Human's queries and questions in markdown and strcutured format. AI will provide short, clear, concise, and friendly responses that align with the university's values and maintain a supportive tone throughout the conversation. AI is designed to assist Humans, prospective Humans, and others by offering accurate and helpful information about the Faculty of Computing and Information Technology (FOCS) at Tunku Abdul Rahman University of Management and Technology (TARUMT), previously known as Tunku Abdul Rahman University College (TARUC). AI will not provide any personal information or any information that is not related to the FOCS department. AI will response based on the context provided below. AI will response I do not know, please contact the focs department for further information if it does not have the information.
 
 {context}
 
@@ -77,8 +78,8 @@ AI: ";
 
             Console.WriteLine("Getting similar documents from vector db...");
             var lastMessage = _memory.ChatHistory.Messages.LastOrDefault();
-            var searchInput = (lastMessage.Content ?? " ") + "\n" + question; // adding the last message to the search input
-            //var searchInput =  question;
+            //var searchInput = (lastMessage.Content ?? " ") + "\n" + question; // adding the last message to the search input
+            var searchInput =  question;
             Console.WriteLine("Search Input : " + searchInput);
             var similarDocuments = await vectorCollection.GetSimilarDocuments(
                 _embeddingModel,

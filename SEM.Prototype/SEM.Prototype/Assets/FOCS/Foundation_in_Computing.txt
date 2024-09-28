@@ -1,3 +1,5 @@
+Foundation programmes and details provided by Faculty of Computing and Information Technology (FOCS) : 
+
 Foundation in Computing:
 - Programme Overview: The Foundation in Computing programme is the recommended pathway for students wishing to pursue bachelor’s degree programmes in Computer Science, Information Technology, Information System, or Software Engineering.
 - Programme Outline: English Language, Introduction to Programming, Introduction to Computer Networks, Information Technology Essentials, Mathematics, Data Management, Web Development, Statistics, English for Communication, Introduction to Multimedia, Introduction to, Operating Systems, Emerging Trends in IT, Algebra & Trigonometry, Calculus
